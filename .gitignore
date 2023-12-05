@@ -1,0 +1,9 @@
+.DS_Store
+__pycache__
+
+data/
+**/data/csv/
+**/data/img/
+**/data/json/
+data/202211_intage/data/
+data/202211_intage/scripts/old_scripts
