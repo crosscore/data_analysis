@@ -43,7 +43,6 @@ for user in df['user'].unique():
     labels = [label for label in category_list if label in labels]
     ax.legend(handles, labels, title='Category', bbox_to_anchor=(1.05, 1), loc='upper left')
 
-    # 画像の保存と閉じる
     output_path = f'../../data/img/analysis_by_total_view_count/line_chart/user/{user}_line_chart.png'
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     plt.tight_layout()

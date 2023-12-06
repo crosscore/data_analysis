@@ -41,7 +41,6 @@ handles = [handles[labels.index(cat)] for cat in category_list if cat in labels]
 labels = [label for label in category_list if label in labels]
 ax.legend(handles, labels, title='Category', bbox_to_anchor=(1.05, 1), loc='upper left')
 
-# 画像の保存と閉じる
 output_path = '../../data/img/analysis_by_total_view_count/line_chart/all/line_chart.png'
 os.makedirs(os.path.dirname(output_path), exist_ok=True)
 plt.tight_layout()

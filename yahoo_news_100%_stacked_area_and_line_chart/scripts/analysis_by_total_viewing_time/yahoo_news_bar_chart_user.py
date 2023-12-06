@@ -36,7 +36,6 @@ for user in df['user'].unique():
     # 凡例の設定
     ax.legend(title='Category', bbox_to_anchor=(1.05, 1), loc='upper left')
     
-    # 出力パスの設定と保存
     output_path = f'../../data/img/analysis_by_total_viewing_time/bar_chart/user/{user}_bar_chart.png'
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     plt.tight_layout()
