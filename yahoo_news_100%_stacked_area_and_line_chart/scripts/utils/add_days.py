@@ -21,11 +21,17 @@ date_ranges = {
 }
 
 df = pd.read_csv("../../data/csv/device_with_category.csv", dtype={'user': str})
+not_found_count = df['category'].value_counts().get('404_not_found', 0)
+print("categoryが404_not_foundの行数:", not_found_count)
 df = df[df['category'] != '404_not_found']
 
 #df['action']の値が'open'の行の数を出力
 open_count = df['action'].value_counts().get('open', 0)
 print("openの行数:", open_count)
+
+#df['category']の値がnanの行の数を出力
+nan_count = df['category'].isna().sum()
+print("categoryがnanの行数:", nan_count)
 
 df = df[df['action'] == 'view']
 df = df.dropna(subset=['start_viewing_date'])

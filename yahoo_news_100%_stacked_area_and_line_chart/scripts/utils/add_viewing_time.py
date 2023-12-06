@@ -4,6 +4,10 @@ from datetime import datetime, timedelta
 
 df = pd.read_csv('../../data/csv/device_with_category_add_days.csv', dtype={'user': str})
 
+#dfのnan値が存在する行を削除
+df = df.dropna()
+print(df)
+
 # stop_viewing_dateのフォーマットを変更して、viewing_time列を計算して追加する
 def process_row(row):
     # start_viewing_dateをdatetimeオブジェクトに変換
