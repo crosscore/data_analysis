@@ -11,7 +11,7 @@ category_list = ['国内', '国際', '経済', 'エンタメ', 'スポーツ', '
 for user in df['user'].unique():
     user_df = df[df['user'] == user]
     # データを加工
-    category_counts = user_df.groupby(['days', 'category']).size().unstack(fill_value=0).reindex(columns=category_list, fill_value=0)
+    category_totals = user_df.groupby(['days', 'category'])['viewing_time'].sum().unstack(fill_value=0).reindex(columns=category_list, fill_value=0)
 
     # 全グラフ共通の設定
     fig, ax = plt.subplots(1, 1, figsize=(10, 6))
@@ -24,10 +24,10 @@ for user in df['user'].unique():
 
     # 線グラフを作成
     category_colors = sns.color_palette("hls", n_colors=len(category_list))
-    category_counts.plot(kind='line', color=category_colors, ax=ax)
+    category_totals.plot(kind='line', color=category_colors, ax=ax)
 
-    ax.set_title(f'{user}のカテゴリー別の視聴回数')
-    ax.set_ylabel('視聴回数')
+    ax.set_title(f'{user}のカテゴリー別の視聴時間')
+    ax.set_ylabel('視聴時間')
     ax.set_xlabel('Days')
 
     # x軸の設定
@@ -44,7 +44,7 @@ for user in df['user'].unique():
     ax.legend(handles, labels, title='Category', bbox_to_anchor=(1.05, 1), loc='upper left')
 
     # 画像の保存と閉じる
-    output_path = f'../../data/img/analysis_by_total_view_count/line_chart/user/{user}_line_chart.png'
+    output_path = f'../../data/img/analysis_by_total_viewing_time/line_chart/user/{user}_line_chart.png'
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     plt.tight_layout()
     plt.savefig(output_path)

@@ -5,7 +5,7 @@ import os
 import numpy as np
 import japanize_matplotlib
 
-df = pd.read_csv('../data/csv/category_days.csv', dtype={'user': str})
+df = pd.read_csv('../../data/csv/category_days.csv', dtype={'user': str})
 category_list = ['国内', '国際', '経済', 'エンタメ', 'スポーツ', 'IT', '科学', 'ライフ', '地域']
 
 # データを加工
@@ -24,7 +24,7 @@ ax.set_xticklabels(x_labels, rotation=45)
 category_colors = sns.color_palette("hls", n_colors=len(category_list))
 category_counts.plot(kind='bar', stacked=True, color=category_colors, ax=ax)
 
-ax.set_title('全ユーザー カテゴリー別日数の視聴回数')
+ax.set_title('全ユーザー カテゴリー別の視聴回数')
 ax.set_ylabel('視聴回数')
 ax.set_xlabel('Days')
 
@@ -45,7 +45,7 @@ handles = [handles[labels.index(cat)] for cat in category_list if cat in labels]
 labels = [label for label in category_list if label in labels]
 ax.legend(handles, labels, title='Category', bbox_to_anchor=(1.05, 1), loc='upper left')
 
-output_path = '../data/img/bar_chart/all/bar_chart.png'
+output_path = '../../data/img/analysis_by_total_view_count/bar_chart/all/bar_chart.png'
 os.makedirs(os.path.dirname(output_path), exist_ok=True)
 plt.tight_layout()
 plt.savefig(output_path)

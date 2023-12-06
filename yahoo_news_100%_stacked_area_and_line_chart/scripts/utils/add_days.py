@@ -75,8 +75,8 @@ df['days'] = df['days'].fillna(0).astype(int)
 
 #url,user,action,device_id,article_title,start_viewing_date,stop_viewing_date,eliminate_date,base_date,published_date,body,title,category,days
 #user,url,action,device_id,category,days
-df = df[['user', 'category', 'days']]
+df = df[['user', 'action', 'device_id', 'category', 'start_viewing_date', 'stop_viewing_date','days']]
 
 print(df.head())
 print(df.describe())
-df.to_csv("../../data/csv/category_days.csv", index=False)
+df.to_csv("../../data/csv/device_with_category_add_days.csv", index=False)

@@ -16,20 +16,20 @@ for user in df['user'].unique():
     
     # データを加工
     # 日付ごとにカテゴリのカウントを集計し、不足している日付の行を0で埋める
-    category_totals = user_df.groupby(['days', 'category']).size().unstack(fill_value=0)
-    category_totals = category_totals.reindex(index=days_range, columns=category_list, fill_value=0)
+    category_counts = user_df.groupby(['days', 'category'])['viewing_time'].sum().unstack(fill_value=0)
+    category_counts = category_counts.reindex(index=days_range, columns=category_list, fill_value=0)
     
     # グラフを描画
     fig, ax = plt.subplots(figsize=(10, 6))
     
     # 棒グラフをプロット
     category_colors = sns.color_palette("hls", len(category_list))
-    category_totals.plot(kind='bar', stacked=True, color=category_colors, ax=ax)
+    category_counts.plot(kind='bar', stacked=True, color=category_colors, ax=ax)
     
     # タイトルとラベルの設定
-    ax.set_title(f'{user}のカテゴリー別日数の視聴回数')
+    ax.set_title(f'{user}のカテゴリー別の視聴時間')
     ax.set_xlabel('Days')
-    ax.set_ylabel('視聴回数')
+    ax.set_ylabel('視聴時間')
     ax.set_xticks(np.arange(len(days_range)))
     ax.set_xticklabels([f'Day {i}' for i in days_range], rotation=45)
     
@@ -37,7 +37,7 @@ for user in df['user'].unique():
     ax.legend(title='Category', bbox_to_anchor=(1.05, 1), loc='upper left')
     
     # 出力パスの設定と保存
-    output_path = f'../../data/img/analysis_by_total_view_count/bar_chart/user/{user}_bar_chart.png'
+    output_path = f'../../data/img/analysis_by_total_viewing_time/bar_chart/user/{user}_bar_chart.png'
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     plt.tight_layout()
     plt.savefig(output_path)

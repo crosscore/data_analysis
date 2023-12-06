@@ -5,7 +5,7 @@ import os
 import numpy as np
 import japanize_matplotlib
 
-df = pd.read_csv('../data/csv/category_days.csv', dtype={'user': str})
+df = pd.read_csv('../../data/csv/category_days.csv', dtype={'user': str})
 category_list = ['国内', '国際', '経済', 'エンタメ', 'スポーツ', 'IT', '科学', 'ライフ', '地域']
 
 # データを加工
@@ -42,7 +42,7 @@ labels = [label for label in category_list if label in labels]
 ax.legend(handles, labels, title='Category', bbox_to_anchor=(1.05, 1), loc='upper left')
 
 # 画像の保存と閉じる
-output_path = '../data/img/line_chart/all/line_chart.png'
+output_path = '../../data/img/analysis_by_total_view_count/line_chart/all/line_chart.png'
 os.makedirs(os.path.dirname(output_path), exist_ok=True)
 plt.tight_layout()
 plt.savefig(output_path)
