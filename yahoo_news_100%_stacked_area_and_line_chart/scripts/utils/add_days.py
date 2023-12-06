@@ -20,7 +20,7 @@ date_ranges = {
     '9556': ('2022-11-24', '2022-12-07'),
 }
 
-df = pd.read_csv("../../data/csv/device_with_category.csv", dtype={'user': str})
+df = pd.read_csv("../../data/csv/original/device_original.csv", dtype={'user': str})
 not_found_count = df['category'].value_counts().get('404_not_found', 0)
 print("categoryが404_not_foundの行数:", not_found_count)
 df = df[df['category'] != '404_not_found']
@@ -34,8 +34,7 @@ nan_count = df['category'].isna().sum()
 print("categoryがnanの行数:", nan_count)
 
 df = df[df['action'] == 'view']
-df = df.dropna(subset=['start_viewing_date'])
-df = df.dropna(subset=['category'])
+df = df.dropna(subset=['start_viewing_date', 'stop_viewing_date', 'category'])
 print(df['category'].value_counts(dropna=False))
 
 exclusion_date_user2387 = ['2022-11-20', '2022-11-21', '2022-11-22', '2022-11-23']
@@ -45,12 +44,10 @@ exclusion_dates = pd.to_datetime(exclusion_date_user2387)
 for date in exclusion_date_user2387:
     df = df[~((df['user'] == '2387') & df['start_viewing_date'].str.contains(date))]
 
-# タイムゾーン情報を考慮して日時を解析
-df['start_viewing_date'] = pd.to_datetime(df['start_viewing_date'], utc=True)
-# タイムゾーン情報を削除
-df['start_viewing_date'] = df['start_viewing_date'].dt.tz_localize(None)
-df.sort_values(by=['user', 'start_viewing_date'], ascending=[True, True], inplace=True)
 df['start_viewing_date'] = pd.to_datetime(df['start_viewing_date'])
+df['stop_viewing_date'] = pd.to_datetime(df['stop_viewing_date'])
+df.sort_values(by=['user', 'start_viewing_date'], ascending=[True, True], inplace=True)
+
 # date_rangesの範囲外のデータを削除
 for user, (start, end) in date_ranges.items():
     df = df[~((df['user'] == user) & ((df['start_viewing_date'] < pd.Timestamp(start)) | (df['start_viewing_date'] > pd.Timestamp(end))))]
@@ -86,3 +83,6 @@ df = df[['user', 'action', 'device_id', 'category', 'start_viewing_date', 'stop_
 print(df.head())
 print(df.describe())
 df.to_csv("../../data/csv/device_with_category_add_days.csv", index=False)
+
+print(f'df["days"].min(): {df["days"].min()}')
+print(f'df["days"].max(): {df["days"].max()}')
