@@ -2,7 +2,7 @@
 import pandas as pd
 from datetime import datetime, timedelta
 
-df = pd.read_csv('../../data/csv/add_days/device_add_days.csv', dtype={'user': str})
+df = pd.read_csv('../../data/csv/add_days/device_add_days_modified_category.csv', dtype={'user': str})
 df = df.dropna()
 
 def process_row(row):
@@ -12,6 +12,6 @@ def process_row(row):
     return viewing_time
 
 df['viewing_time'] = df.apply(process_row, axis=1)
-df = df[['user', 'category', 'viewing_time', 'days']]
-df.to_csv('../../data/csv/add_viewing_time/device_add_days_viewing_time.csv', index=False)
+df = df[['user', 'modified_category', 'viewing_time', 'days']]
+df.to_csv('../../data/csv/add_viewing_time/device_add_days_viewing_time_modified_category.csv', index=False)
 print(df)

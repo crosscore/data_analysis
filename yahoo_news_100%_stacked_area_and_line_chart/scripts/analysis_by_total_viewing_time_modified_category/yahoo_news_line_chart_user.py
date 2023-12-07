@@ -5,13 +5,13 @@ import os
 import numpy as np
 import japanize_matplotlib
 
-df = pd.read_csv('../../data/csv/add_viewing_time/device_add_days_viewing_time.csv', dtype={'user': str})
+df = pd.read_csv('../../data/csv/add_viewing_time/device_add_days_viewing_time_modified_category.csv', dtype={'user': str})
 category_list = ['国内', '国際', '経済', 'エンタメ', 'スポーツ', 'IT', '科学', 'ライフ', '地域']
 
 for user in df['user'].unique():
     user_df = df[df['user'] == user]
     # データを加工
-    category_totals = user_df.groupby(['days', 'category'])['viewing_time'].sum().unstack(fill_value=0).reindex(columns=category_list, fill_value=0)
+    category_totals = user_df.groupby(['days', 'modified_category'])['viewing_time'].sum().unstack(fill_value=0).reindex(columns=category_list, fill_value=0)
 
     # 全グラフ共通の設定
     fig, ax = plt.subplots(1, 1, figsize=(10, 6))
@@ -43,7 +43,7 @@ for user in df['user'].unique():
     labels = [label for label in category_list if label in labels]
     ax.legend(handles, labels, title='Category', bbox_to_anchor=(1.05, 1), loc='upper left')
 
-    output_path = f'../../data/img/analysis_by_total_viewing_time/line_chart/user/{user}_line_chart.png'
+    output_path = f'../../data/img/analysis_by_total_viewing_time_modified_category/line_chart/user/{user}_line_chart_modified.png'
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     plt.tight_layout()
     plt.savefig(output_path)
