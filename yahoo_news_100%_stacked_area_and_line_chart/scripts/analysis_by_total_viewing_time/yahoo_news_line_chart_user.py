@@ -5,7 +5,7 @@ import os
 import numpy as np
 import japanize_matplotlib
 
-df = pd.read_csv('../../data/csv/category_days_viewing_time.csv', dtype={'user': str})
+df = pd.read_csv('../../data/csv/add_days/device_add_days.csv', dtype={'user': str})
 category_list = ['国内', '国際', '経済', 'エンタメ', 'スポーツ', 'IT', '科学', 'ライフ', '地域']
 
 for user in df['user'].unique():

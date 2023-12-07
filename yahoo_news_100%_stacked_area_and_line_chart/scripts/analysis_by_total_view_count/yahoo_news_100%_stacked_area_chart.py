@@ -5,7 +5,7 @@ import os
 import numpy as np
 import japanize_matplotlib
 
-df = pd.read_csv('../../data/csv/device_with_category_add_days.csv', dtype={'user': str})
+df = pd.read_csv('../../data/csv/add_days/device_add_days.csv', dtype={'user': str})
 category_list = ['国内', '国際', '経済', 'エンタメ', 'スポーツ', 'IT', '科学', 'ライフ', '地域']
 
 # データを加工
@@ -17,7 +17,7 @@ category_percentage = category_counts.div(category_counts.sum(axis=1), axis=0)
 # 全グラフ共通の設定
 fig, ax = plt.subplots(1, 1, figsize=(10, 6))
 x_min = 1
-x_max = 13
+x_max = 14
 x_ticks = np.arange(x_min, x_max + 1)
 x_labels = [f'Day {i}' for i in range(x_min, x_max + 1)]
 ax.set_xticks(x_ticks)

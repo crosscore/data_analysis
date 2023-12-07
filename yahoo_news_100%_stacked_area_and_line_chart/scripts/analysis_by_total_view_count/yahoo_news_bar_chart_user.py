@@ -5,14 +5,14 @@ import os
 import numpy as np
 import japanize_matplotlib
 
-df = pd.read_csv('../../data/csv/device_with_category_add_days.csv', dtype={'user': str})
+df = pd.read_csv('../../data/csv/add_days/device_add_days.csv', dtype={'user': str})
 category_list = ['国内', '国際', '経済', 'エンタメ', 'スポーツ', 'IT', '科学', 'ライフ', '地域']
 
 for user in df['user'].unique():
     user_df = df[df['user'] == user]
     
     # グラフに表示する日付の範囲を指定
-    days_range = np.arange(1, 14)  # 1から13までの日付
+    days_range = np.arange(1, 15)  # 1から14までの日付
     
     # データを加工
     # 日付ごとにカテゴリのカウントを集計し、不足している日付の行を0で埋める
