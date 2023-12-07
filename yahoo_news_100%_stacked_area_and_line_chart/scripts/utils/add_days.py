@@ -20,10 +20,10 @@ date_ranges = {
     '9556': ('2022-11-24', '2022-12-07'),
 }
 
-df = pd.read_csv("../../data/csv/original/device_original.csv", dtype={'user': str})
+df = pd.read_csv("../../data/csv/original/device_original_with_category_plus_modified.csv", dtype={'user': str})
 not_found_count = df['category'].value_counts().get('404_not_found', 0)
 print("categoryが404_not_foundの行数:", not_found_count)
-df = df[df['category'] != '404_not_found']
+#df = df[df['category'] != '404_not_found']
 
 #df['action']の値が'open'の行の数を出力
 open_count = df['action'].value_counts().get('open', 0)
@@ -50,39 +50,33 @@ df.sort_values(by=['user', 'start_viewing_date'], ascending=[True, True], inplac
 
 # date_rangesの範囲外のデータを削除
 for user, (start, end) in date_ranges.items():
-    df = df[~((df['user'] == user) & ((df['start_viewing_date'] < pd.Timestamp(start)) | (df['start_viewing_date'] > pd.Timestamp(end))))]
+    end_date = pd.Timestamp(end) + timedelta(days=1)  # 翌日の0時までを含むように変更
+    df = df[~((df['user'] == user) & ((df['start_viewing_date'] < pd.Timestamp(start)) | (df['start_viewing_date'] >= end_date)))]
 
-def calculate_days(row, date_ranges, start_dates):
+def calculate_days(row, date_ranges):
     user = row['user']
     date = row['start_viewing_date']
     start_date = pd.Timestamp(date_ranges[user][0])
     end_date = pd.Timestamp(date_ranges[user][1])
-    # ユーザー2387の除外日を扱う
     if user == '2387':
-        excluded_days_count = sum([1 for excl_date in exclusion_dates if start_date <= excl_date < date])
+        excluded_days_count = sum([1 for excl_date in exclusion_dates if start_date <= excl_date <= date])
         days_count = (date - start_date).days + 1 - excluded_days_count
     else:
         days_count = (date - start_date).days + 1
-    # 日付が範囲外の場合は0を返す
-    if date < start_date or date > end_date:
-        return 0
-    else:
-        return days_count
+    return days_count
 
-# 各ユーザーの初日を取得
-start_dates = {user: pd.Timestamp(range[0]) for user, range in date_ranges.items()}
-
-# 日数を計算してカラムに追加
-df['days'] = df.apply(lambda row: calculate_days(row, date_ranges, start_dates), axis=1)
-df['days'] = df['days'].fillna(0).astype(int)
+df['days'] = df.apply(lambda row: calculate_days(row, date_ranges), axis=1)
 
 #url,user,action,device_id,article_title,start_viewing_date,stop_viewing_date,eliminate_date,base_date,published_date,body,title,category,days
 #user,url,action,device_id,category,days
-df = df[['user', 'action', 'device_id', 'category', 'start_viewing_date', 'stop_viewing_date','days']]
+df = df[['user', 'action', 'device_id', 'category', 'modified_category','start_viewing_date', 'stop_viewing_date','days']]
 
 print(df.head())
 print(df.describe())
-df.to_csv("../../data/csv/device_with_category_add_days.csv", index=False)
+df.to_csv("../../data/csv/add_days/device_add_days.csv", index=False)
 
 print(f'df["days"].min(): {df["days"].min()}')
 print(f'df["days"].max(): {df["days"].max()}')
+
+#'user'毎の'days'列の値の最大値を出力
+print(df.groupby('user')['days'].max())
