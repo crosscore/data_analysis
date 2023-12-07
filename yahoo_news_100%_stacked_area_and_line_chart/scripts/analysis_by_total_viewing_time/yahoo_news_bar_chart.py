@@ -29,8 +29,8 @@ ax.set_ylabel('視聴時間')
 ax.set_xlabel('Days')
 
 # x軸のティックとラベルを設定
-x_ticks = np.arange(x_min, x_max + 1)  # 1から13までの数値
-x_labels = [f'Day {i}' for i in x_ticks]  # 'Day 1' から 'Day 13' までのラベル
+x_ticks = np.arange(x_min, x_max + 1)
+x_labels = [f'Day {i}' for i in x_ticks]
 
 # グラフのx軸にティックとラベルを設定
 ax.set_xticks(x_ticks - 1)  # ティックの位置を0ベースのインデックスに合わせる
