@@ -28,7 +28,7 @@ x_labels = [f'Day {i}' for i in x_ticks]
 category_colors = sns.color_palette("hls", n_colors=len(category_list))
 category_percentage.plot(kind='area', stacked=True, color=category_colors, ax=ax)
 
-ax.set_title('全ユーザー カテゴリー別視聴時間の割合')
+ax.set_title('全ユーザー カテゴリー別視聴回数の割合')
 ax.set_ylabel('割合')
 ax.set_xlabel('Days')
 
@@ -45,7 +45,7 @@ handles = [handles[labels.index(cat)] for cat in category_list if cat in labels]
 labels = [label for label in category_list if label in labels]
 ax.legend(handles, labels, title='Category', bbox_to_anchor=(1.05, 1), loc='upper left')
 
-output_path = '../../../data/img/analysis_by_total_view_count/100%_stacked_area_chart/all/stacked_area_chart.png'
+output_path = '../../../data/img/normal/analysis_by_total_view_count/100%_stacked_area_chart/all/stacked_area_chart.png'
 os.makedirs(os.path.dirname(output_path), exist_ok=True)
 plt.tight_layout()
 plt.savefig(output_path)

@@ -28,7 +28,7 @@ for user in df['user'].unique():
     category_colors = sns.color_palette("hls", n_colors=len(category_list))
     category_totals.plot(kind='bar', stacked=True, color=category_colors, ax=ax)
 
-    ax.set_title(f'全ユーザー カテゴリー別視聴時間')
+    ax.set_title(f'User {user} カテゴリー別視聴回数')
     ax.set_ylabel('視聴時間')
     ax.set_xlabel('Days')
 
@@ -45,7 +45,7 @@ for user in df['user'].unique():
     labels = [label for label in category_list if label in labels]
     ax.legend(handles, labels, title='Category', bbox_to_anchor=(1.05, 1), loc='upper left')
 
-    output_path = f'../../../data/img/analysis_by_total_view_count/bar_chart/user/{user}_bar_chart.png'
+    output_path = f'../../../data/img/normal/analysis_by_total_view_count/bar_chart/user/{user}_bar_chart.png'
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     plt.tight_layout()
     plt.savefig(output_path)

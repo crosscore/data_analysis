@@ -25,7 +25,7 @@ x_labels = [f'Day {i}' for i in x_ticks]
 category_colors = sns.color_palette("hls", n_colors=len(category_list))
 category_totals.plot(kind='bar', stacked=True, color=category_colors, ax=ax)
 
-ax.set_title(f'全ユーザー カテゴリー別視聴時間')
+ax.set_title('全ユーザー カテゴリー別視聴時間')
 ax.set_ylabel('視聴時間')
 ax.set_xlabel('Days')
 
@@ -42,7 +42,7 @@ handles = [handles[labels.index(cat)] for cat in category_list if cat in labels]
 labels = [label for label in category_list if label in labels]
 ax.legend(handles, labels, title='Category', bbox_to_anchor=(1.05, 1), loc='upper left')
 
-output_path = f'../../../data/img/analysis_by_total_viewing_time/bar_chart/all/bar_chart.png'
+output_path = f'../../../data/img/normal/analysis_by_total_viewing_time/bar_chart/all/bar_chart.png'
 os.makedirs(os.path.dirname(output_path), exist_ok=True)
 plt.tight_layout()
 plt.savefig(output_path)

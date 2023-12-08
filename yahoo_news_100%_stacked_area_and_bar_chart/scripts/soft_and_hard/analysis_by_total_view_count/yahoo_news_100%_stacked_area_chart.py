@@ -29,7 +29,7 @@ x_labels = [f'Day {i}' for i in x_ticks]
 category_colors = sns.color_palette("hls", n_colors=len(category_list))
 category_percentage.plot(kind='area', stacked=True, color=category_colors, ax=ax)
 
-ax.set_title('全ユーザー カテゴリー別視聴時間の割合')
+ax.set_title('全ユーザー カテゴリー別視聴回数の割合')
 ax.set_ylabel('割合')
 ax.set_xlabel('Days')
 

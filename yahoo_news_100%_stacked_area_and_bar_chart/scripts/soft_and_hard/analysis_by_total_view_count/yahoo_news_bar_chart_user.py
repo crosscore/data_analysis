@@ -29,7 +29,7 @@ for user in df['user'].unique():
     category_colors = sns.color_palette("hls", n_colors=len(category_list))
     category_totals.plot(kind='bar', stacked=True, color=category_colors, ax=ax)
 
-    ax.set_title(f'全ユーザー カテゴリー別視聴時間')
+    ax.set_title(f'User {user} カテゴリー別視聴回数')
     ax.set_ylabel('視聴時間')
     ax.set_xlabel('Days')
 
