@@ -5,7 +5,7 @@ import os
 import numpy as np
 import japanize_matplotlib
 
-df = pd.read_csv('../../data/csv/add_viewing_time/device_add_days_viewing_time.csv', dtype={'user': str})
+df = pd.read_csv('../../../data/csv/add_viewing_time/device_add_days_viewing_time.csv', dtype={'user': str})
 category_list = ['国内', '国際', '経済', 'エンタメ', 'スポーツ', 'IT', '科学', 'ライフ', '地域']
 
 for user in df['user'].unique():
@@ -36,7 +36,7 @@ for user in df['user'].unique():
     # 凡例の設定
     ax.legend(title='Category', bbox_to_anchor=(1.05, 1), loc='upper left')
     
-    output_path = f'../../data/img/analysis_by_total_viewing_time/bar_chart/user/{user}_bar_chart.png'
+    output_path = f'../../../data/img/analysis_by_total_viewing_time/bar_chart/user/{user}_bar_chart.png'
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     plt.tight_layout()
     plt.savefig(output_path)
