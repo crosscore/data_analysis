@@ -2,7 +2,7 @@ import os
 import subprocess
 from tqdm import tqdm
 
-directory = '../'
+directory = '../normal/'
 
 # directoryとそのサブディレクトリから全ての.pyファイルを取得
 files = []

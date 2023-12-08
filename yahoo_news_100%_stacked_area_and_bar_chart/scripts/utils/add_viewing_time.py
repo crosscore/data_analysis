@@ -3,7 +3,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 
 df = pd.read_csv('../../data/csv/add_days/device_add_days.csv', dtype={'user': str})
-df = df.dropna()
+print(df)
 
 def process_row(row):
     start = datetime.fromisoformat(row['start_viewing_date'])
