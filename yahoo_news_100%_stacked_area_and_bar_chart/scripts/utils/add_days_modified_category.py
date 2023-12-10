@@ -25,13 +25,13 @@ not_found_count = df['modified_category'].value_counts().get('404_not_found', 0)
 print("categoryが404_not_foundの行数:", not_found_count)
 #df = df[df['modified_category'] != '404_not_found']
 
-#df['action']の値が'open'の行の数を出力
+#Output the number of rows where the value of df['action'] is 'open'
 open_count = df['action'].value_counts().get('open', 0)
-print("openの行数:", open_count)
+print("open lines count:", open_count)
 
-#df['modified_category']の値がnanの行の数を出力
+#Output the number of rows where the value of df['modified_category'] is nan
 nan_count = df['modified_category'].isna().sum()
-print("modified_categoryがnanの行数:", nan_count)
+print("Number of lines where modified_category is nan:", nan_count)
 
 df = df[df['action'] == 'view']
 df = df.dropna(subset=['start_viewing_date', 'stop_viewing_date', 'modified_category'])
@@ -40,7 +40,7 @@ print(df['modified_category'].value_counts(dropna=False))
 exclusion_date_user2387 = ['2022-11-20', '2022-11-21', '2022-11-22', '2022-11-23']
 exclusion_dates = pd.to_datetime(exclusion_date_user2387)
 
-# user '2387' の行で exclusion_date_user2387 に含まれる日付のデータを除外
+# Exclude date data included in exclusion_date_user2387 in user '2387' line
 for date in exclusion_date_user2387:
     df = df[~((df['user'] == '2387') & df['start_viewing_date'].str.contains(date))]
 
@@ -48,9 +48,9 @@ df['start_viewing_date'] = pd.to_datetime(df['start_viewing_date'])
 df['stop_viewing_date'] = pd.to_datetime(df['stop_viewing_date'])
 df.sort_values(by=['user', 'start_viewing_date'], ascending=[True, True], inplace=True)
 
-# date_rangesの範囲外のデータを削除
+# delete data outside date_ranges
 for user, (start, end) in date_ranges.items():
-    end_date = pd.Timestamp(end) + timedelta(days=1)  # 翌日の0時までを含むように変更
+    end_date = pd.Timestamp(end) + timedelta(days=1)
     df = df[~((df['user'] == user) & ((df['start_viewing_date'] < pd.Timestamp(start)) | (df['start_viewing_date'] >= end_date)))]
 
 def calculate_days(row, date_ranges):
@@ -78,5 +78,4 @@ df.to_csv("../../data/csv/add_days/device_add_days_modified_category.csv", index
 print(f'df["days"].min(): {df["days"].min()}')
 print(f'df["days"].max(): {df["days"].max()}')
 
-#'user'毎の'days'列の値の最大値を出力
 print(df.groupby('user')['days'].max())

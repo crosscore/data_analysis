@@ -7,7 +7,6 @@ print(df)
 df = df[['user', 'action', 'device_id', 'start_viewing_date', 'stop_viewing_date', 'category']]
 print(df)
 
-#dfの'category'列の値が'404_not_found'の行を削除
 df = df[df['category'] != '404_not_found']
 
 df = df.dropna(subset=['category'])

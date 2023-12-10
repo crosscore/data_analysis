@@ -4,10 +4,10 @@ from tqdm import tqdm
 
 directory = '../normal/'
 
-# directoryとそのサブディレクトリから全ての.pyファイルを取得
+# Get all .py files from directory and its subdirectories
 files = []
 for dirpath, dirnames, filenames in os.walk(directory):
-    # 'utils'フォルダを除外
+    # Exclude utils directory if it exists
     if 'utils' in dirnames:
         dirnames.remove('utils')
     for file in filenames:

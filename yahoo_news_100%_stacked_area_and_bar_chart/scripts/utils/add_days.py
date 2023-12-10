@@ -26,7 +26,7 @@ print(df)
 exclusion_date_user2387 = ['2022-11-20', '2022-11-21', '2022-11-22', '2022-11-23']
 exclusion_dates = pd.to_datetime(exclusion_date_user2387)
 
-# user '2387' の行で exclusion_date_user2387 に含まれる日付のデータを除外
+# Exclude date data included in exclusion_date_user2387 in user '2387' line
 for date in exclusion_date_user2387:
     df = df[~((df['user'] == '2387') & df['start_viewing_date'].str.contains(date))]
 
@@ -35,9 +35,9 @@ df['stop_viewing_date'] = pd.to_datetime(df['stop_viewing_date'])
 df.sort_values(by=['user', 'start_viewing_date'], ascending=[True, True], inplace=True)
 print(df)
 
-# date_rangesの範囲外のデータを削除
+# delete data outside date_ranges
 for user, (start, end) in date_ranges.items():
-    end_date = pd.Timestamp(end) + timedelta(days=1)  # 翌日の0時までを含むように変更
+    end_date = pd.Timestamp(end) + timedelta(days=1)
     df = df[~((df['user'] == user) & ((df['start_viewing_date'] < pd.Timestamp(start)) | (df['start_viewing_date'] >= end_date)))]
 
 def calculate_days(row, date_ranges):
@@ -57,5 +57,4 @@ df['days'] = df.apply(lambda row: calculate_days(row, date_ranges), axis=1)
 df.to_csv("../../data/csv/add_days/device_add_days.csv", index=False)
 print(df)
 
-#'user'毎の'days'列の値の最大値を出力
 print(df.groupby('user')['days'].max())

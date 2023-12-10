@@ -4,7 +4,7 @@ from tqdm import tqdm
 
 directory = '../'
 
-# directoryとそのサブディレクトリから全ての.pyファイルを取得
+# Get all .py files from directory and its subdirectories
 files = []
 for dirpath, dirnames, filenames in os.walk(directory):
     if 'exec_all' in dirnames:

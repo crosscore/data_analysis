@@ -4,7 +4,7 @@ from tqdm import tqdm
 
 directory = '../'
 
-# directoryとそのサブディレクトリから全ての.pyファイルを取得
+# Get all .py files from directory and its subdirectories
 files = []
 for dirpath, dirnames, filenames in os.walk(directory):
     if 'exec_all' in dirnames:
@@ -18,4 +18,4 @@ for file in tqdm(files):
         print(f'excute: {file}')
         subprocess.run(['python', file], check=True)
     except subprocess.CalledProcessError as e:
-        print(f"エラー: {file} の実行中に問題が発生しました: {e}")
+        print(f'Error: {file}: {e}')
