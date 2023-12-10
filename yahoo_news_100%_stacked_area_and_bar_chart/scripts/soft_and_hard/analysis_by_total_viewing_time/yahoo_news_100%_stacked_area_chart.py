@@ -14,7 +14,7 @@ category_list = ['soft_news', 'hard_news']
 category_totals = df.groupby(['days', 'category'])['viewing_time'].sum().unstack(fill_value=0).reindex(columns=category_list, fill_value=0)
 
 # 日付の範囲を確保
-days_range = np.arange(1, 15)  # Day 1からDay 14まで
+days_range = np.arange(1, 15)
 category_totals = category_totals.reindex(days_range, fill_value=0)  # 日付の範囲を設定
 
 # 各カテゴリーの割合を計算（100% stacked area chartのため）

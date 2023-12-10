@@ -17,7 +17,7 @@ for user in df['user'].unique():
     category_totals = user_df.groupby(['days', 'category'])['viewing_time'].sum().unstack(fill_value=0).reindex(columns=category_list, fill_value=0)
 
     # 日付の範囲を確保
-    days_range = np.arange(1, 15)  # Day 1からDay 14まで
+    days_range = np.arange(1, 15)
     category_totals = category_totals.reindex(days_range, fill_value=0)  # 日付の範囲を設定
 
     # 全グラフ共通の設定
@@ -52,4 +52,3 @@ for user in df['user'].unique():
     plt.savefig(output_path)
     plt.close()
     print(f'{output_path} was output.')
-
