@@ -6,7 +6,7 @@ import os
 import numpy as np
 import japanize_matplotlib
 
-df = pd.read_csv('../../../../data/csv/soft_and_hard/device_add_days_viewing_time_del_outliers_iqr.csv', dtype={'user': str})
+df = pd.read_csv('../../../../data/csv/soft_and_hard/z-score/device_add_days_viewing_time_del_outliers_soft_hard.csv', dtype={'user': str})
 #category_list = ['国内', '国際', '経済', 'エンタメ', 'スポーツ', 'IT', '科学', 'ライフ', '地域']
 category_list = ['soft_news', 'hard_news']
 
@@ -46,7 +46,7 @@ handles = [handles[labels.index(cat)] for cat in category_list if cat in labels]
 labels = [label for label in category_list if label in labels]
 ax.legend(handles, labels, title='Category', bbox_to_anchor=(1.05, 1), loc='upper left')
 
-output_path = '../../../../data/img/soft_and_hard/iqr/analysis_by_total_view_count/100%_stacked_area_chart/all/stacked_area_chart.png'
+output_path = '../../../../data/img/soft_and_hard/z-score/analysis_by_total_view_count/100%_stacked_area_chart/all/stacked_area_chart.png'
 os.makedirs(os.path.dirname(output_path), exist_ok=True)
 plt.tight_layout()
 plt.savefig(output_path)

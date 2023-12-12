@@ -5,7 +5,7 @@ import os
 import numpy as np
 import japanize_matplotlib
 
-df = pd.read_csv('../../../../data/csv/soft_and_hard/device_add_days_viewing_time_del_outliers_soft_hard.csv', dtype={'user': str})
+df = pd.read_csv('../../../../data/csv/soft_and_hard/z-score/device_add_days_viewing_time_del_outliers_soft_hard.csv', dtype={'user': str})
 
 # Calculate the average value of 'viewing_time' for each 'days' column
 average_viewing_time = df.groupby('days')['viewing_time'].mean()
@@ -19,7 +19,7 @@ plt.title('Average daily viewing time')
 plt.xlabel('Days')
 plt.ylabel('Average viewing time')
 
-output_path = '../../../../data/img/soft_and_hard/iqr/average_viewing_time_by_day/bar_chart.png'
+output_path = '../../../../data/img/soft_and_hard/z-score/average_viewing_time_by_day/all/bar_chart.png'
 os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
 plt.tight_layout()
