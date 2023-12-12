@@ -1,6 +1,5 @@
 import pandas as pd
 
-# Load the CSV files
 all_device_df = pd.read_csv('../../data/csv/original/all_device.csv', dtype={'user': str})
 device_with_category_df = pd.read_csv('../../data/csv/original/device_with_category_v3.csv', dtype={'user': str})
 

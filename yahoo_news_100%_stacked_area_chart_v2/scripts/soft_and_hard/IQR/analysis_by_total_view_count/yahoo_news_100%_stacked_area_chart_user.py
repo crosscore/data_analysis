@@ -6,14 +6,14 @@ import os
 import numpy as np
 import japanize_matplotlib
 
-df = pd.read_csv('../../../data/csv/add_viewing_time/device_add_days_viewing_time_soft_hard.csv', dtype={'user': str})
+df = pd.read_csv('../../../../data/csv/soft_and_hard/iqr/device_add_days_viewing_time_del_outliers_soft_hard.csv', dtype={'user': str})
 #category_list = ['国内', '国際', '経済', 'エンタメ', 'スポーツ', 'IT', '科学', 'ライフ', '地域']
 category_list = ['soft_news', 'hard_news']
 
 for user in df['user'].unique():
     user_df = df[df['user'] == user]
     # Process data
-    category_totals = user_df.groupby(['days', 'category'])['viewing_time'].sum().unstack(fill_value=0).reindex(columns=category_list, fill_value=0)
+    category_totals = user_df.groupby(['days', 'category']).size().unstack(fill_value=0).reindex(columns=category_list, fill_value=0)
 
     # ensure date range
     days_range = np.arange(1, 15)
@@ -31,7 +31,7 @@ for user in df['user'].unique():
     category_colors = sns.color_palette("hls", n_colors=len(category_list))
     category_percentage.plot(kind='area', stacked=True, color=category_colors, ax=ax)
 
-    ax.set_title(f'User {user} Percentage of viewing time by category')
+    ax.set_title(f'User {user} Percentage of views by category')
     ax.set_ylabel('percentage')
     ax.set_xlabel('Days')
 
@@ -48,7 +48,7 @@ for user in df['user'].unique():
     labels = [label for label in category_list if label in labels]
     ax.legend(handles, labels, title='Category', bbox_to_anchor=(1.05, 1), loc='upper left')
 
-    output_path = f'../../../data/img/soft_and_hard/analysis_by_total_viewing_time/100%_stacked_area_chart/user/{user}_stacked_area_chart.png'
+    output_path = f'../../../../data/img/soft_and_hard/iqr/analysis_by_total_view_count/100%_stacked_area_chart/user/{user}_stacked_area_chart.png'
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     plt.tight_layout()
     plt.savefig(output_path)

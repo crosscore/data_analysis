@@ -20,7 +20,7 @@ date_ranges = {
     '9556': ('2022-11-24', '2022-12-07'),
 }
 
-df = pd.read_csv("../../data/csv/original/device_original_with_category_formatted.csv", dtype={'user': str})
+df = pd.read_csv("../../data/csv/original/all_device_add_category_dropna.csv", dtype={'user': str})
 print(df)
 
 exclusion_date_user2387 = ['2022-11-20', '2022-11-21', '2022-11-22', '2022-11-23']
