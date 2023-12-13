@@ -11,7 +11,7 @@ tv_iqr = pd.read_csv('../csv/mobile/original/TV_APP/IQR/TV_IQR.csv', dtype={'use
 
 # draw histogram of df_before
 plt.figure(figsize=(10, 6))
-plt.hist(app_and_tv_before['duration'], bins=200, color='skyblue', edgecolor='black')
+plt.hist(app_and_tv_before['duration'], bins=20, color='skyblue', edgecolor='black')
 plt.title('Distribution of Viewing Time Before IQR')
 plt.xlabel('Viewing Time')
 plt.ylabel('Frequency')
@@ -24,7 +24,7 @@ print(f'Image saved: {output_path_before}')
 
 # draw histogram of df_after
 plt.figure(figsize=(10, 6))
-plt.hist(app_and_tv_after['duration'], bins=200, color='green', edgecolor='black')
+plt.hist(app_and_tv_after['duration'], bins=20, color='green', edgecolor='black')
 plt.title('Distribution of Viewing Time After IQR')
 plt.xlabel('Viewing Time')
 plt.ylabel('Frequency')
@@ -37,7 +37,7 @@ print(f'Image saved: {output_path_after}')
 
 # draw histogram of app_iqr
 plt.figure(figsize=(10, 6))
-plt.hist(app_iqr['duration'], bins=200, color='green', edgecolor='black')
+plt.hist(app_iqr['duration'], bins=20, color='green', edgecolor='black')
 plt.title('Distribution of Viewing Time After IQR')
 plt.xlabel('Viewing Time')
 plt.ylabel('Frequency')
@@ -50,7 +50,7 @@ print(f'Image saved: {output_path_after}')
 
 # draw histogram of tv_iqr
 plt.figure(figsize=(10, 6))
-plt.hist(tv_iqr['duration'], bins=200, color='green', edgecolor='black')
+plt.hist(tv_iqr['duration'], bins=20, color='green', edgecolor='black')
 plt.title('Distribution of Viewing Time After IQR')
 plt.xlabel('Viewing Time')
 plt.ylabel('Frequency')
