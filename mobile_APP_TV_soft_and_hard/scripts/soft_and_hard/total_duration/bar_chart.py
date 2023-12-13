@@ -5,15 +5,14 @@ import os
 import numpy as np
 
 def plot_total_category_duration(df, file_name):
-    category_list = ['soft', 'hard']
     # Calculate total duration for each category per day
-    category_totals = df.groupby(['days', 'category'])['duration'].sum().unstack(fill_value=0).reindex(columns=category_list, fill_value=0)
+    category_totals = df.groupby(['days', 'category'])['duration'].sum().unstack(fill_value=0)
     days_range = np.arange(1, 15)
     category_totals = category_totals.reindex(days_range, fill_value=0) # Ensure all days are included
 
     # Plot settings
     plt.figure(figsize=(10, 6)) # Adjust the figsize as needed
-    category_totals.plot(kind='bar', stacked=True, color=sns.color_palette("hls", n_colors=len(category_list)))
+    category_totals.plot(kind='bar', stacked=True, color=sns.color_palette("hls", n_colors=len(category_totals.columns)))
     plt.title('Total Duration per Category per Day for All Users')
     plt.xlabel('Days')
     plt.ylabel('Total Duration')
@@ -47,5 +46,5 @@ df_app = pd.read_csv('../../../data/csv/soft_and_hard/APP.csv', dtype={'user': s
 df_tv = pd.read_csv('../../../data/csv/soft_and_hard/TV.csv', dtype={'user': str})
 
 # Plot and save total duration for each dataset
-plot_total_category_duration(df_app, 'app_total_duration_per_category.png')
-plot_total_category_duration(df_tv, 'tv_total_duration_per_category.png')
+plot_total_category_duration(df_app, 'app_total_duration.png')
+plot_total_category_duration(df_tv, 'tv_total_duration.png')
