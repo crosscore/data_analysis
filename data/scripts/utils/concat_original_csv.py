@@ -29,6 +29,7 @@ all_df['stop_viewing_date'] = all_df['stop_viewing_date'].str.replace(r'\+.*', '
 
 all_df = all_df[all_df['action'] == 'view']
 print(f"Extract only 'view':\n{all_df}")
+all_df.to_csv("../../csv/device/all/all_device_view_only_original.csv", index=False)
 
 #all_df = all_df.drop_duplicates(subset=['user', 'start_viewing_date', 'stop_viewing_date'])
 

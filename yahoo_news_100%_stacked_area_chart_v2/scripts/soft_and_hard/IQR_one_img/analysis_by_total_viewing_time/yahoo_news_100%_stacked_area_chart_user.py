@@ -48,7 +48,7 @@ for i, user in enumerate(users):
 plt.tight_layout()
 
 # Output path for the combined PNG file
-output_path = f'../../../../data/img/soft_and_hard/iqr_one_img/analysis_by_total_viewing_time/bar_chart/user/bar_chart.png'
+output_path = f'../../../../data/img/soft_and_hard/iqr_one_img/analysis_by_total_viewing_time/100%_stacked_area_chart/user/combined_users_stacked_area_chart.png'
 os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
 # Save the figure

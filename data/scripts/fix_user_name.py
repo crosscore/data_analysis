@@ -1,7 +1,6 @@
 import pandas as pd
 import glob
 
-
 csv_files = glob.glob("../csv_original_files/mobile/warehouse/*.csv")
 
 for file in csv_files:
