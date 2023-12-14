@@ -17,7 +17,7 @@ def plot_and_save(df, file_name):
         user_df.plot(kind='bar', color='skyblue', ax=axes[i])
         axes[i].set_title(f'User {user}')
         axes[i].set_xlabel('Days')
-        axes[i].set_ylabel('Average duration')
+        axes[i].set_ylabel('Average Duration')
 
     plt.tight_layout()
 

@@ -45,7 +45,7 @@ handles = [handles[labels.index(cat)] for cat in category_list if cat in labels]
 labels = [label for label in category_list if label in labels]
 ax.legend(handles, labels, title='Category', bbox_to_anchor=(1.05, 1), loc='upper left')
 
-output_path = '../../../../data/img/soft_and_hard/iqr/analysis_by_total_view_count/100%_stacked_area_chart/all/stacked_area_chart.png'
+output_path = '../../../../data/img/soft_and_hard/iqr_one_img/analysis_by_total_view_count/100%_stacked_area_chart/all/stacked_area_chart.png'
 os.makedirs(os.path.dirname(output_path), exist_ok=True)
 plt.tight_layout()
 plt.savefig(output_path)

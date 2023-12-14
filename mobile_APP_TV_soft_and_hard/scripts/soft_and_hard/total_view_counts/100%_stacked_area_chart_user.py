@@ -45,7 +45,7 @@ def plot_user_percentage_category_duration(df, file_name):
     plt.tight_layout()
 
     # Output path for the combined PNG file
-    output_path = f'../../../data/img/soft_and_hard/total_duration/100%_stacked_area_chart/user/{file_name}'
+    output_path = f'../../../data/img/soft_and_hard/view_counts/100%_stacked_area_chart/user/{file_name}'
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
     # Save the figure
@@ -59,5 +59,5 @@ df_app = pd.read_csv('../../../data/csv/soft_and_hard/APP.csv', dtype={'user': s
 df_tv = pd.read_csv('../../../data/csv/soft_and_hard/TV.csv', dtype={'user': str})
 
 # Plot and save the graph for each user in each dataset
-plot_user_percentage_category_duration(df_app, 'app_100%_stacked_area_chart_duration_user.png')
-plot_user_percentage_category_duration(df_tv, 'tv_100%_stacked_area_chart_duration_user.png')
+plot_user_percentage_category_duration(df_app, 'app_100%_stacked_area_chart_view_counts_user.png')
+plot_user_percentage_category_duration(df_tv, 'tv_100%_stacked_area_chart_view_counts_user.png')

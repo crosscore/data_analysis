@@ -7,14 +7,14 @@ df = pd.read_csv('../../../../data/csv/soft_and_hard/iqr/device_add_days_viewing
 
 # Histogram settings
 plt.figure(figsize=(10, 6))
-plt.hist(df['viewing_time'], bins=200, color='skyblue', edgecolor='black')
+plt.hist(df['viewing_time'], bins=50, color='skyblue', edgecolor='black')
 
 # Set graph title and axis labels
 plt.title('Distribution of viewing time')
 plt.xlabel('Viewing time')
 plt.ylabel('Frequency')
 
-output_path = '../../../../data/img/soft_and_hard/iqr/viewing_time_distribution/histogram.png'
+output_path = '../../../../data/img/soft_and_hard/iqr_one_img/viewing_time_distribution/histogram.png'
 os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
 plt.tight_layout()

@@ -24,7 +24,7 @@ for i, user in enumerate(df['user'].unique()[:15]): # Limit to first 15 users
 plt.tight_layout()
 
 # Output path for the combined PNG file
-output_path = '../../../../data/img/soft_and_hard/iqr_one_img/average_viewing_time_by_day/user/combined_users_bar_chart.png'
+output_path = '../../../../data/img/soft_and_hard/iqr_one_img/average_viewing_time_by_day/user/bar_chart_user.png'
 os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
 plt.savefig(output_path)

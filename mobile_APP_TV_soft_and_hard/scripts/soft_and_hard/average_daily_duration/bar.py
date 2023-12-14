@@ -14,9 +14,9 @@ def plot_and_save_total_duration(df, file_name):
     # Plot
     plt.figure(figsize=(10, 6)) # Adjust the figsize as needed
     total_duration_by_day.plot(kind='bar', color='skyblue')
-    plt.title('Total Duration per Day for All Users')
+    plt.title('Average Duration per Day for All Users')
     plt.xlabel('Days')
-    plt.ylabel('Total Duration')
+    plt.ylabel('Average Duration')
 
     plt.tight_layout()
 

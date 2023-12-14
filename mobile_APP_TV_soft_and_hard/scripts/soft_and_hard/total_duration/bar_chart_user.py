@@ -24,13 +24,13 @@ def plot_user_category_duration(df, file_name):
         axes[i].set_ylabel('Total Duration')
 
         # Set x-axis ticks and labels
-        x_ticks = days_range
-        x_labels = [f'Day {i}' for i in x_ticks]
+        x_ticks = np.arange(len(days_range))
+        x_labels = [f'Day {day}' for day in days_range]
         axes[i].set_xticks(x_ticks)
         axes[i].set_xticklabels(x_labels, rotation=45)
 
         # Set x-axis range
-        axes[i].set_xlim(days_range[0], days_range[-1])
+        axes[i].set_xlim(-0.5, len(days_range) - 0.5)  # Set x-axis range to include all bars
 
         # Set legend for the first subplot only
         if i == 0:
@@ -41,7 +41,7 @@ def plot_user_category_duration(df, file_name):
     plt.tight_layout()
 
     # Output path for the combined PNG file
-    output_path = f'../../../data/img/soft_and_hard/user_duration/bar_chart/{file_name}'
+    output_path = f'../../../data/img/soft_and_hard/total_duration/bar_chart/user/{file_name}'
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
     # Save the figure

@@ -13,17 +13,13 @@ def plot_total_category_duration(df, file_name):
     # Plot settings
     plt.figure(figsize=(10, 6)) # Adjust the figsize as needed
     category_totals.plot(kind='bar', stacked=True, color=sns.color_palette("hls", n_colors=len(category_totals.columns)))
-    plt.title('Total Duration per Category per Day for All Users')
+    plt.title('Total Duration for All Users')
     plt.xlabel('Days')
     plt.ylabel('Total Duration')
 
     # Set x-axis ticks and labels
-    x_ticks = days_range
-    x_labels = [f'Day {i}' for i in x_ticks]
-    plt.xticks(x_ticks, x_labels, rotation=45)
-
-    # Set x-axis range
-    plt.xlim(days_range[0], days_range[-1])
+    x_labels = [f'Day {i}' for i in days_range]
+    plt.xticks(np.arange(len(x_labels)), x_labels, rotation=45)
 
     # Set legend
     plt.legend(title='Category')
