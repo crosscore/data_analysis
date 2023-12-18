@@ -38,7 +38,7 @@ def plot_decreased_categories(decreased_categories, title, output_path):
     sns.barplot(x=decreased_categories.index, y=decreased_categories.values, palette='hls')
     plt.title(title)
     plt.ylabel('Duration Decrease')
-    plt.xticks(rotation=45)
+    plt.xticks(rotation=270)
     plt.tight_layout()
     plt.savefig(output_path)
     plt.close()

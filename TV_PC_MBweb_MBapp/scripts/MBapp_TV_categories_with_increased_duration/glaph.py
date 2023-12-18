@@ -39,7 +39,7 @@ def plot_increased_categories(increased_categories, title, output_path):
     sns.barplot(x=increased_categories.index, y=increased_categories.values, palette='hls')
     plt.title(title)
     plt.ylabel('Duration Increase')
-    plt.xticks(rotation=45)
+    plt.xticks(rotation=270)
     plt.tight_layout()
     plt.savefig(output_path)
     plt.close()

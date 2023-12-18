@@ -1,13 +1,72 @@
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-import numpy as np
+import os
+
+# Function to unify time format
+def unify_time_format(time_str):
+    # Split the time string by colon
+    parts = time_str.split(':')
+
+    # If there are only two parts (hours and minutes), add ":00" for seconds
+    if len(parts) == 2:
+        return time_str + ":00"
+    return time_str
+
+# Function to plot total duration comparison for a single user
+def plot_user_duration_comparison(df1, df2, user, ax, title_suffix):
+    # Filter data for the given user
+    df1_user = df1[df1['user'] == user]
+    df2_user = df2[df2['user'] == user]
+
+    # Calculate total duration for each source name in each user's dataset
+    total_duration_df1_user = df1_user.groupby('source_name')['duration'].sum().reset_index()
+    total_duration_df2_user = df2_user.groupby('source_name')['duration'].sum().reset_index()
+
+    # Merge the two dataframes for comparison
+    merged_df_user = pd.merge(total_duration_df1_user, total_duration_df2_user, on='source_name', 
+                              suffixes=('_exp1', '_exp2'), how='outer').fillna(0)
+
+    # Melting the dataframe for easier plotting
+    melted_df_user = pd.melt(merged_df_user, id_vars='source_name', var_name='experiment', value_name='total_duration')
+
+    # Plot for the user
+    sns.barplot(x='source_name', y='total_duration', hue='experiment', data=melted_df_user, ax=ax)
+    ax.set_title(f'User {user} {title_suffix}')
+    ax.set_xlabel('')
+    ax.set_ylabel('')
+    ax.tick_params(labelrotation=90)
+
+# Function to plot total duration comparison for the top 15 users
+def plot_top_users_duration_comparison(df1, df2, title):
+    # Get the top 15 users based on the number of records
+    top_users = df['user'].value_counts().head(15).index.tolist()
+
+    # Create a 3x5 grid of subplots
+    fig, axs = plt.subplots(3, 5, figsize=(20, 12), constrained_layout=True)
+    axs = axs.flatten()
+    
+    for i, user in enumerate(top_users):
+        plot_user_duration_comparison(df1, df2, user, axs[i], title)
+
+    # Adjust the layout
+    plt.subplots_adjust(hspace=0.5, wspace=0.4)
+    for ax in axs[len(top_users):]:
+        ax.remove()  # Remove unused subplots
+
+    # Save the figure
+    file_name = 'top_users_duration_comparison.png'
+    output_path = f'../../data/img/duration_comparison/top_users/{file_name}'
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    plt.savefig(output_path)
+    plt.close()
+
+    print(f'{output_path} output completed.')
 
 # Load dataset
 df = pd.read_csv('../../data/csv/concat_and_IQR/MBapp_TV_with_category.csv', dtype={'user': str})
-
-# Convert the 'date' column to datetime
-df['date'] = pd.to_datetime(df['date'], format='%Y/%m/%d %H:%M:%S', errors='coerce')
+df['date'] = df['date'].apply(unify_time_format)
+df['date'] = pd.to_datetime(df['date'], dayfirst=True)
 
 # Split the data into two dataframes based on the specified date range
 start_date = '2022-10-22'
@@ -15,64 +74,5 @@ end_date = '2022-11-04'
 df_exp1 = df[(df['date'] >= start_date) & (df['date'] <= end_date)]
 df_exp2 = df[(df['date'] < start_date) | (df['date'] > end_date)]
 
-# Get all unique users and source names
-users = df['user'].unique()
-source_names = df['source_name'].unique()
-
-# Displays the total value of duration for both experimental periods for each source_name
-for source_name in source_names:
-    total_duration_exp1 = df_exp1[df_exp1['source_name'] == source_name]['duration'].sum()
-    total_duration_exp2 = df_exp2[df_exp2['source_name'] == source_name]['duration'].sum()
-    print(f"Source Name: {source_name}")
-    print(f"  Experiment 1 Total Duration: {total_duration_exp1}")
-    print(f"  Experiment 2 Total Duration: {total_duration_exp2}\n")
-
-
-# Create a figure to contain the subplots
-fig, axes = plt.subplots(15, 4, figsize=(20, 30))  # 15 users, 4 source_names
-
-for i, user in enumerate(users):
-    for j, source_name in enumerate(source_names):
-        # Position for each subplot
-        ax = axes[i, j % 4]
-
-        # Filter data for the specific user and source name
-        df1_user_source = df_exp1[(df_exp1['user'] == user) & (df_exp1['source_name'] == source_name)]
-        df2_user_source = df_exp2[(df_exp2['user'] == user) & (df_exp2['source_name'] == source_name)]
-
-        # Calculate total duration for each experiment
-        total_duration_exp1 = df1_user_source['duration'].sum()
-        total_duration_exp2 = df2_user_source['duration'].sum()
-
-        # Prepare data for plotting
-        data = {
-            'Experiment': ['exp1', 'exp2'],
-            'Total Duration': [total_duration_exp1, total_duration_exp2]
-        }
-        df_plot = pd.DataFrame(data)
-
-        # Plot
-        sns.barplot(x='Experiment', y='Total Duration', data=df_plot, ax=ax)
-        ax.set_title(f'User {user} - {source_name}')
-        ax.set_xlabel('')
-        ax.set_ylabel('')
-
-        # Hide x-axis labels to prevent overlap
-        if i < 14:  # Only hide for rows except for the last one
-            ax.set_xticklabels([])
-        else:
-            ax.set_xticklabels(['exp1', 'exp2'], rotation=45)
-
-        # Hide y-axis labels to prevent overlap
-        if j > 0:
-            ax.set_yticklabels([])
-
-# Adjust layout
-plt.tight_layout()
-
-# Save the figure
-output_path = '../../data/img/duration_comparison/user/total_duration_comparison_user.png'
-plt.savefig(output_path)
-plt.close()
-
-print(f'Graph saved at {output_path}')
+# Plot and save the comparison graph for the top 15 users
+plot_top_users_duration_comparison(df_exp1, df_exp2, 'Total Duration Comparison Between Experiments')

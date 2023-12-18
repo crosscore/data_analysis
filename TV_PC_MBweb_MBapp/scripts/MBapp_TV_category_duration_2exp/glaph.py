@@ -31,7 +31,7 @@ def plot_total_duration_comparison(df1, df2, title):
     plt.title(title)
     plt.xlabel('Source Name')
     plt.ylabel('Total Duration')
-    plt.xticks(rotation=45)
+    plt.xticks(rotation=270)
     plt.tight_layout()
 
     # Save plot
