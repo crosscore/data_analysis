@@ -22,23 +22,6 @@ def plot_histogram(df, file_name, title):
     plt.close()
     print(f'{output_path} has been printed.')
 
-def remove_outliers_by_IQR(df, column):
-    # Calculate the first and third quartiles
-    Q1 = df[column].quantile(0.25)
-    Q3 = df[column].quantile(0.75)
-    IQR = Q3 - Q1
-
-    # Define outlier conditions
-    lower_bound = Q1 - 1.5 * IQR
-    upper_bound = Q3 + 1.5 * IQR
-
-    # Identify and return outliers
-    outliers_df = df[(df[column] < lower_bound) | (df[column] > upper_bound)]
-
-    # Filter out outliers
-    filtered_df = df[(df[column] >= lower_bound) & (df[column] <= upper_bound)]
-    return filtered_df, outliers_df
-
 def standardize_date_format(df):
     # Convert 'date' column to datetime object
     df['date'] = pd.to_datetime(df['date'])
@@ -104,57 +87,34 @@ df_MobileWeb = filter_dates(df_MobileWeb)
 df_PC = filter_dates(df_PC)
 df_TV = filter_dates(df_TV)
 
-plot_histogram(df_MobileApp, 'before/MobileApp_duration_histogram.png', 'MobileApp Duration Histogram')
-plot_histogram(df_MobileWeb, 'before/MobileWeb_duration_histogram.png', 'MobileWeb Duration Histogram')
-plot_histogram(df_PC, 'before/PC_duration_histogram.png', 'PC Duration Histogram')
-plot_histogram(df_TV, 'before/TV_duration_histogram.png', 'TV Duration Histogram')
+# plot_histogram(df_MobileApp, 'before/MobileApp_duration_histogram.png', 'MobileApp Duration Histogram')
+# plot_histogram(df_MobileWeb, 'before/MobileWeb_duration_histogram.png', 'MobileWeb Duration Histogram')
+# plot_histogram(df_PC, 'before/PC_duration_histogram.png', 'PC Duration Histogram')
+# plot_histogram(df_TV, 'before/TV_duration_histogram.png', 'TV Duration Histogram')
 
-df_MobileApp_filtered, df_MobileApp_outliers  = remove_outliers_by_IQR(df_MobileApp, 'duration')
-df_MobileWeb_filtered, df_MobileWeb_outliers  = remove_outliers_by_IQR(df_MobileWeb, 'duration')
-df_PC_filtered, df_PC_outliers  = remove_outliers_by_IQR(df_PC, 'duration')
-df_TV_filtered, df_TV_outliers  = remove_outliers_by_IQR(df_TV, 'duration')
-
-plot_histogram(df_MobileApp_filtered, 'after/MobileApp_duration_histogram.png', 'MobileApp Duration Histogram')
-plot_histogram(df_MobileWeb_filtered, 'after/MobileWeb_duration_histogram.png', 'MobileWeb Duration Histogram')
-plot_histogram(df_PC_filtered, 'after/PC_duration_histogram.png', 'PC Duration Histogram')
-plot_histogram(df_TV_filtered, 'after/TV_duration_histogram.png', 'TV Duration Histogram')
+# plot_histogram(df_MobileApp_filtered, 'after/MobileApp_duration_histogram.png', 'MobileApp Duration Histogram')
+# plot_histogram(df_MobileWeb_filtered, 'after/MobileWeb_duration_histogram.png', 'MobileWeb Duration Histogram')
+# plot_histogram(df_PC_filtered, 'after/PC_duration_histogram.png', 'PC Duration Histogram')
+# plot_histogram(df_TV_filtered, 'after/TV_duration_histogram.png', 'TV Duration Histogram')
 
 # Add a new column 'source_name' to each dataframe and set its value
-df_MobileApp_filtered['source_name'] = 'MobileApp'
-df_MobileWeb_filtered['source_name'] = 'MobileWeb'
-df_PC_filtered['source_name'] = 'PC'
-df_TV_filtered['source_name'] = 'TV'
+df_MobileApp['source_name'] = 'MobileApp'
+df_MobileWeb['source_name'] = 'MobileWeb'
+df_PC['source_name'] = 'PC'
+df_TV['source_name'] = 'TV'
 
 # Combine all filtered dataframes into one
 combined_filtered_df = pd.concat([
-    df_MobileApp_filtered,
-    df_MobileWeb_filtered,
-    df_PC_filtered,
-    df_TV_filtered
+    df_MobileApp,
+    df_MobileWeb,
+    df_PC,
+    df_TV
 ])
 
 # Exclude negative values of duratoin
 combined_filtered_df = combined_filtered_df[combined_filtered_df['duration'] >= 0]
 
 # Export combined dataframe to CSV
-combined_filtered_df.to_csv('../../data/csv/concat_and_IQR/MBapp_MBweb_PC_TV.csv', index=False)
-
-# Repeat the process for outliers dataframes
-df_MobileApp_outliers['source_name'] = 'MobileApp'
-df_MobileWeb_outliers['source_name'] = 'MobileWeb'
-df_PC_outliers['source_name'] = 'PC'
-df_TV_outliers['source_name'] = 'TV'
-
-# Combine all outliers dataframes into one
-combined_outliers_df = pd.concat([
-    df_MobileApp_outliers,
-    df_MobileWeb_outliers,
-    df_PC_outliers,
-    df_TV_outliers
-])
-
-# Exclude negative values of duratoin
-combined_outliers_df = combined_outliers_df[combined_outliers_df['duration'] >= 0]
-
-# Export combined dataframe to CSV
-combined_outliers_df.to_csv('../../data/csv/concat_and_IQR/MBapp_MBweb_PC_TV_outliers.csv', index=False)
+output_path = '../../data/csv/concat/MBapp_MBweb_PC_TV.csv'
+os.makedirs(os.path.dirname(output_path), exist_ok=True)
+combined_filtered_df.to_csv('../../data/csv/concat/MBapp_MBweb_PC_TV.csv', index=False)
