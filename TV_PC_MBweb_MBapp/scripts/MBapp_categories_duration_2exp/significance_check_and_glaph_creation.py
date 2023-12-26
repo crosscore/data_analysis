@@ -34,49 +34,67 @@ def compare_groups(df1, df2, column):
     return p
 
 
-df = pd.read_csv('../../data/csv/outlier_removed/TV_outlier_removed.csv', dtype={'user': str})
+df = pd.read_csv('../../data/csv/outlier_removed/MobileApp_outlier_removed.csv', dtype={'user': str})
 
 # Split data based on experiment period
 exp1_range = pd.to_datetime(['2022-10-22', '2022-11-04'])
 df['date'] = pd.to_datetime(df['date'])
 
 category_mapping = {
-    'ドラマ': 'Drama',
-    '情報/ワイドショー': 'Information/Wide Show',
-    'バラエティー': 'Variety',
-    'ニュース/報道': 'News/Reporting',
-    'ドキュメンタリー': 'Documentary',
-    'アニメ/特撮': 'Anime/SFX',
+    'ツール類': 'Tools',
+    'ソーシャルネットワーキング': 'SNS',
+    'ライフ': 'Lifestyle',
+    'ニュース': 'News',
+    'その他／不明': 'Others/Unknown',
+    'ファイナンス': 'Finance',
+    '写真・ビデオ': 'Photo & Video',
+    'ショッピング': 'Shopping',
+    '仕事効率化': 'Productivity',
+    'ゲーム': 'Games',
+    '旅行＆地域': 'Travel & Local',
+    'ミュージック': 'Music',
+    'ヘルスケア／フィットネス': 'Healthcare/Fitness',
+    'フード＆ドリンク': 'Food & Drink',
+    '天気': 'Weather',
+    'ビジネス': 'Business',
+    'システム': 'System',
+    '地図＆ナビ': 'Maps & Navigation',
+    'エンタテイメント': 'Entertainment',
+    'ブック・コミック・辞書': 'Books/Comics/Dictionary',
+    'メディカル': 'Medical',
     'スポーツ': 'Sports',
-    '映画': 'Movie',
-    '趣味/教育': 'Hobby/Education',
-    '演劇/公演': 'Theater/Performance',
-    '音楽': 'Music',
-    '福祉': 'Welfare'
+    '教育': 'Education'
 }
-df['tv_category'] = df['tv_category'].map(category_mapping)
+df['app_category'] = df['app_category'].map(category_mapping)
 
 df_exp1 = df[df['date'].between(exp1_range[0], exp1_range[1])]
 df_exp2 = df[~df['date'].between(exp1_range[0], exp1_range[1])]
-print(df_exp1['tv_category'].value_counts(dropna=False))
-print(df_exp2['tv_category'].value_counts(dropna=False))
+print(df_exp1['app_category'].value_counts(dropna=False))
+print(df_exp2['app_category'].value_counts(dropna=False))
 
 results = {}
 significance_level = 0.05
-for tv_category in df['tv_category'].unique():
-    print(tv_category)
-    df1 = df_exp1[df_exp1['tv_category'] == tv_category]
-    df2 = df_exp2[df_exp2['tv_category'] == tv_category]
+for app_category in df['app_category'].unique():
+    print(app_category)
+    df1 = df_exp1[df_exp1['app_category'] == app_category]
+    df2 = df_exp2[df_exp2['app_category'] == app_category]
     p_value = compare_groups(df1, df2, 'duration')
-    result = "/   / Significant difference /   /" if p_value < significance_level else "No significant difference"
-    results[tv_category] = (result, p_value)
+    if p_value is not None:
+        result = "/   /Significant difference/   /" if p_value < significance_level else "No significant difference"
+    else:
+        result = "Insufficient data to determine significance..."
+    results[app_category] = (result, p_value)
+
 print('------------')
-for tv_category, (result, p_value) in results.items():
-    print(f"{tv_category}: {result}, p-value = {p_value:.33f}")
+for app_category, (result, p_value) in results.items():
+    if p_value is not None:
+        print(f"{app_category}: {result}, p-value = {p_value:.33f}")
+    else:
+        print(f"{app_category}: {result}")
 print('------------')
 
-total_duration_exp1 = df_exp1.groupby('tv_category')['duration'].sum().reset_index()
-total_duration_exp2 = df_exp2.groupby('tv_category')['duration'].sum().reset_index()
+total_duration_exp1 = df_exp1.groupby('app_category')['duration'].sum().reset_index()
+total_duration_exp2 = df_exp2.groupby('app_category')['duration'].sum().reset_index()
 
 total_duration_exp1['Experiment'] = 'Exp1'
 total_duration_exp2['Experiment'] = 'Exp2'
@@ -87,11 +105,11 @@ significant_categories = [category for category, (result, _) in results.items() 
 
 plt.figure(figsize=(12, 8))
 sns.set(style="whitegrid")
-palette = sns.color_palette("hls", len(total_duration['tv_category'].unique()))
-bar_plot = sns.barplot(x="tv_category", y="duration", hue="Experiment", data=total_duration, palette=palette)
+palette = sns.color_palette("hls", len(total_duration['app_category'].unique()))
+bar_plot = sns.barplot(x="app_category", y="duration", hue="Experiment", data=total_duration, palette=palette)
 
-plt.title('Total Duration by tv_category for Each Experiment Period')
-plt.xlabel('tv_category')
+plt.title('Total Duration by app_category for Each Experiment Period')
+plt.xlabel('app_category')
 plt.ylabel('Total Duration')
 plt.xticks(rotation=270)
 plt.legend(title='Experiment')
@@ -101,6 +119,6 @@ for label in bar_plot.get_xticklabels():
     if label.get_text() in significant_categories:
         label.set_color('crimson')
 
-output_file = '../../data/img/TV_duration_2exp/total_duration_by_tv_category.png'
+output_file = '../../data/img/MBapp_duration_2exp/total_duration_by_app_category.png'
 os.makedirs(os.path.dirname(output_file), exist_ok=True)
 plt.savefig(output_file)

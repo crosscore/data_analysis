@@ -22,15 +22,7 @@ def plot_histogram(df, file_name, title):
     plt.close()
     print(f'{output_path} has been printed.')
 
-def standardize_date_format(df):
-    # Convert 'date' column to datetime object
-    df['date'] = pd.to_datetime(df['date'])
-    # Format it with seconds using apply method
-    df['date'] = df['date'].apply(lambda x: x.strftime('%Y/%m/%d %H:%M:%S'))
-    return df
-
 def filter_dates(df):
-    exp1_range = ['2022-10-22', '2022-11-04']
     exp1_range = ['2022-10-22', '2022-11-04']
     exp2_ranges = {
         '0765': ('2022-11-23', '2022-12-06'),
@@ -50,11 +42,12 @@ def filter_dates(df):
         '9556': ('2022-11-24', '2022-12-07'),
     }
     exclusion_date_user2387 = ['2022-11-20', '2022-11-21', '2022-11-22', '2022-11-23']
-    exclusion_dates_2387 = pd.to_datetime(exclusion_date_user2387)
 
     df['date'] = pd.to_datetime(df['date'])
-    filtered_dfs = [] 
+    df['date'] = df['date'].apply(lambda x: x.strftime('%Y/%m/%d %H:%M:%S'))
+    exclusion_dates_2387 = pd.to_datetime(exclusion_date_user2387)
 
+    filtered_dfs = [] 
     df_exp1 = df[df['date'].between(*pd.to_datetime(exp1_range))]
     filtered_dfs.append(df_exp1)
 
@@ -76,11 +69,6 @@ df_MobileApp = df_MobileApp[['user', 'date', 'duration']]
 df_MobileWeb = df_MobileWeb[['user', 'date', 'duration']]
 df_PC = df_PC[['user', 'date', 'duration']]
 df_TV = df_TV[['user', 'date', 'duration']]
-
-df_MobileApp = standardize_date_format(df_MobileApp)
-df_MobileWeb = standardize_date_format(df_MobileWeb)
-df_PC = standardize_date_format(df_PC)
-df_TV = standardize_date_format(df_TV)
 
 df_MobileApp = filter_dates(df_MobileApp)
 df_MobileWeb = filter_dates(df_MobileWeb)

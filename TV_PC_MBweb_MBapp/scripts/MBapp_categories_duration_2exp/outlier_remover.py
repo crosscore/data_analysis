@@ -53,9 +53,9 @@ def process_data(df, category, column='duration'):
     else:
         return pd.DataFrame()
 
-df = pd.read_csv('../../data/csv/date_range/TV_date_range.csv', dtype={'user': str})
+df = pd.read_csv('../../data/csv/date_range/MobileApp_date_range_dropna.csv', dtype={'user': str})
 print(df)
-print(df['tv_category'].value_counts(dropna=False))
+print(df['app_category'].value_counts(dropna=False))
 
 # Split data based on experiment period
 exp1_range = pd.to_datetime(['2022-10-22', '2022-11-04'])
@@ -65,12 +65,12 @@ df_exp2 = df[~df['date'].between(exp1_range[0], exp1_range[1])]
 print(df_exp1)
 print(df_exp2)
 
-processed_df_exp1 = process_data(df_exp1, category='tv_category')
-processed_df_exp2 = process_data(df_exp2, category='tv_category')
+processed_df_exp1 = process_data(df_exp1, category='app_category')
+processed_df_exp2 = process_data(df_exp2, category='app_category')
 processed_df = pd.concat([processed_df_exp1, processed_df_exp2])
 
-output_file = '../../data/csv/outlier_removed/TV_outlier_removed.csv'
+output_file = '../../data/csv/outlier_removed/MobileApp_outlier_removed.csv'
 os.makedirs(os.path.dirname(output_file), exist_ok=True)
 print(processed_df)
-print(processed_df['tv_category'].value_counts(dropna=False))
+print(processed_df['app_category'].value_counts(dropna=False))
 processed_df.to_csv(output_file, index=False)
