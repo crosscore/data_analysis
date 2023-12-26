@@ -18,6 +18,11 @@ def is_normal(data, test_type="shapiro"):
         stat, p = stats.kstest(data, 'norm')
     return p > 0.05
 
+def check_equal_variance(df1, df2, column):
+    """Check for equal variance using Levene's test"""
+    stat, p = stats.levene(df1[column], df2[column])
+    return p > 0.05
+
 def compare_groups(df1, df2, column):
     # Check if data is empty or too small
     if df1[column].empty or df2[column].empty or len(df1[column]) < 3 or len(df2[column]) < 3:
@@ -25,14 +30,19 @@ def compare_groups(df1, df2, column):
         return None
     # Determine which normality test to use based on sample size
     normal_test_type = "shapiro" if len(df1[column]) < 5000 else "ks"
+    # Normality check
     if is_normal(df1[column], normal_test_type) and is_normal(df2[column], normal_test_type):
-        print("Use t-test for normal distributions")
-        stat, p = stats.ttest_ind(df1[column], df2[column])
+        # Checking for equal variance
+        if check_equal_variance(df1, df2, column):
+            print("Equal variance: Use standard t-test")
+            stat, p = stats.ttest_ind(df1[column], df2[column])
+        else:
+            print("Unequal variance: Use Welch's t-test")
+            stat, p = stats.ttest_ind(df1[column], df2[column], equal_var=False)
     else:
-        print("Use /// Mann-Whitney U test /// for non-normal distributions")
+        print("Use Mann-Whitney U test for non-normal distributions")
         stat, p = stats.mannwhitneyu(df1[column], df2[column])
     return p
-
 
 df = pd.read_csv('../../data/csv/outlier_removed/MobileApp_outlier_removed.csv', dtype={'user': str})
 

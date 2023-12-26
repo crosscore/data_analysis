@@ -18,6 +18,11 @@ def is_normal(data, test_type="shapiro"):
         stat, p = stats.kstest(data, 'norm')
     return p > 0.05
 
+def check_equal_variance(df1, df2, column):
+    """Check for equal variance using Levene's test"""
+    stat, p = stats.levene(df1[column], df2[column])
+    return p > 0.05
+
 def compare_groups(df1, df2, column):
     # Check if data is empty or too small
     if df1[column].empty or df2[column].empty or len(df1[column]) < 3 or len(df2[column]) < 3:
@@ -25,11 +30,17 @@ def compare_groups(df1, df2, column):
         return None
     # Determine which normality test to use based on sample size
     normal_test_type = "shapiro" if len(df1[column]) < 5000 else "ks"
+    # Normality check
     if is_normal(df1[column], normal_test_type) and is_normal(df2[column], normal_test_type):
-        print("Use t-test for normal distributions")
-        stat, p = stats.ttest_ind(df1[column], df2[column])
+        # Checking for equal variance
+        if check_equal_variance(df1, df2, column):
+            print("Equal variance: Use standard t-test")
+            stat, p = stats.ttest_ind(df1[column], df2[column])
+        else:
+            print("Unequal variance: Use Welch's t-test")
+            stat, p = stats.ttest_ind(df1[column], df2[column], equal_var=False)
     else:
-        print("Use /// Mann-Whitney U test /// for non-normal distributions")
+        print("Use Mann-Whitney U test for non-normal distributions")
         stat, p = stats.mannwhitneyu(df1[column], df2[column])
     return p
 
@@ -68,7 +79,10 @@ for tv_category in df['tv_category'].unique():
     df1 = df_exp1[df_exp1['tv_category'] == tv_category]
     df2 = df_exp2[df_exp2['tv_category'] == tv_category]
     p_value = compare_groups(df1, df2, 'duration')
-    result = "/   / Significant difference /   /" if p_value < significance_level else "No significant difference"
+    if p_value is not None:
+        result = "/   /Significant difference/   /" if p_value < significance_level else "No significant difference"
+    else:
+        result = "Insufficient data to determine significance..."
     results[tv_category] = (result, p_value)
 print('------------')
 for tv_category, (result, p_value) in results.items():
