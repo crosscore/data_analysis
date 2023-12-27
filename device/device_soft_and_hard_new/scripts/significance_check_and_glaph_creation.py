@@ -68,7 +68,13 @@ def compare_groups(df1, df2, column):
 
 def plot_boxplot(df, category_col, period_col, duration_col, output_file):
     plt.figure(figsize=(12, 8))
-    sns.boxplot(x=category_col, y=duration_col, hue=period_col, data=df, palette="Set3")
+    ax = sns.boxplot(x=category_col, y=duration_col, hue=period_col, data=df, palette="hls")
+    # ボックスの本体に透明度を設定
+    for patch in ax.artists:
+        patch.set_alpha(0.8)
+    # ヒゲ、キャップ、アウトライヤーに透明度を設定
+    for line in ax.lines:
+        line.set_alpha(0.8)
     plt.title('Boxplot of Duration by Category and Experiment Period')
     plt.xlabel(category_col)
     plt.ylabel('Duration')
@@ -103,7 +109,9 @@ def plot_scatter(df, category_col, period_col, duration_col, output_file):
 
 def plot_violin(df, category_col, period_col, duration_col, output_file):
     plt.figure(figsize=(12, 8))
-    sns.violinplot(x=category_col, y=duration_col, hue=period_col, data=df, palette="Set3", split=True)
+    ax = sns.violinplot(x=category_col, y=duration_col, hue=period_col, data=df, palette="hls", split=True)
+    for patch in ax.collections:
+        patch.set_alpha(0.8)
     plt.title('Violin Plot of Duration by Category and Experiment Period')
     plt.xlabel(category_col)
     plt.ylabel('Duration')
@@ -116,7 +124,7 @@ def plot_bar(df, category_col, period_col, duration_col, output_file, significan
     plt.figure(figsize=(12, 8))
     sns.set(style="whitegrid")
     palette = sns.color_palette("hls", len(df_grouped[category_col].unique()))
-    bar_plot = sns.barplot(x=category_col, y=duration_col, hue=period_col, data=df_grouped, palette=palette)
+    bar_plot = sns.barplot(x=category_col, y=duration_col, hue=period_col, data=df_grouped, palette=palette, alpha=0.8)
     plt.title('Total Duration of Each Category for Each Period')
     plt.xlabel(category_col)
     plt.ylabel('Total Duration')
