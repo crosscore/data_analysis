@@ -69,12 +69,6 @@ def compare_groups(df1, df2, column):
 def plot_boxplot(df, category_col, period_col, duration_col, output_file):
     plt.figure(figsize=(12, 8))
     ax = sns.boxplot(x=category_col, y=duration_col, hue=period_col, data=df, palette="hls")
-    # ボックスの本体に透明度を設定
-    for patch in ax.artists:
-        patch.set_alpha(0.8)
-    # ヒゲ、キャップ、アウトライヤーに透明度を設定
-    for line in ax.lines:
-        line.set_alpha(0.8)
     plt.title('Boxplot of Duration by Category and Experiment Period')
     plt.xlabel(category_col)
     plt.ylabel('Duration')
