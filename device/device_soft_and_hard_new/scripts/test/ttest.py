@@ -19,7 +19,6 @@ t_values = np.linspace(-4, 4, 100)
 pdf_values = stats.t.pdf(t_values, df)
 
 fig, axs = plt.subplots(2, 1, figsize=(10, 14))
-
 ax = axs[0]
 ax.axis('off')
 draw_text(r'$\bar{x}_1, \bar{x}_2$ : グループ1, 2の平均値', (0.5, 0.95), ax=ax)
@@ -49,48 +48,35 @@ plt.tight_layout()
 plt.savefig('t_test_formula_and_t_dist_table_with_graph_jp.png')
 
 
-fig, ax = plt.subplots(figsize=(10, 24))
+
+# LaTeX数式の設定
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
+
+# LaTeX数式
+mannwhitneyu_text = """
+検定統計量 $U$ の計算に必要な数値を用意する。\n
+[1] 標本サイズ $n_{\\mathrm{A}} \\quad n_{\\mathrm{B}}$\n
+[2] 順位和 $R_{\\mathrm{A}} \\quad R_{\\mathrm{B}}$\n
+STEP 2\n
+検定統計量 $U$ の候補として、 $U_1$ と $U_2$ を計算する。\n
+$$\n
+U_1=n_{\\mathrm{A}} n_{\\mathrm{B}}+\\frac{1}{2} n_{\\mathrm{A}}\\left(n_{\\mathrm{A}}+1\\right)-R_{\\mathrm{A}}\n
+$$\n
+$$\n
+U_2=n_{\\mathrm{A}} n_{\\mathrm{B}}+\\frac{1}{2} n_{\\mathrm{B}}\\left(n_{\\mathrm{B}}+1\\right)-R_{\\mathrm{B}}\n
+$$\n
+$U_1$ と $U_2$ のうち、より小さな値を $U$ とする。\n
+計算して得た $U$ と臨界値 $U_{0.05}$ の間に以下の不等式が成立するとき\n
+$$\n
+U \\leq U_{0.05}\n
+$$\n
+「統計的に有意な差が認められた $(P<0.05)$ と結論する。\n
+この不等式が満たされなければ「統計的に有意な差は認められなかった」と結論する。\n
+"""
+
+# 図の生成
+fig, ax = plt.subplots(figsize=(8, 10))
+ax.text(0.5, 0.5, mannwhitneyu_text, fontsize=12, ha='center', va='center', wrap=True)
 ax.axis('off')
-
-# Mann-Whitney U検定の計算式
-mannwhitneyu_text = [
-    r'$U_1 = R_1 - \frac{n_1(n_1+1)}{2}$ : グループ1のU値',
-    r'$U_2 = R_2 - \frac{n_2(n_2+1)}{2}$ : グループ2のU値',
-    r'$R_1, R_2$ : グループ1, 2のデータにランクをつけた合計',
-    r'$n_1, n_2$ : グループ1, 2のサンプルサイズ',
-    r'ランク付け: 全データを合わせて小さい順にランク付け',
-    r'同じ値がある場合は、その値の平均ランクを割り当てる',
-    r'使用するU値は、$U_1$ と $U_2$ の小さい方',
-    r'帰無仮説: 二つのサンプルが同じ母集団から来ている',
-    r'対立仮説: 二つのサンプルが異なる母集団から来ている',
-    r'p値の計算には正規近似または厳密法を使用',
-    r'p値 < 有意水準 ⇒ 帰無仮説を棄却、統計的に有意な差がある',
-    '',
-    'ランク付けの例:',
-    'データ: グループ1 [3, 1, 2], グループ2 [5, 6, 4]',
-    '合算して並べる: [1, 2, 3, 4, 5, 6]',
-    'ランク付け: [1, 2, 3, 4, 5, 6]',
-    'グループ1のランク合計: $R_1 = 1 + 2 + 3 = 6$',
-    'グループ2のランク合計: $R_2 = 4 + 5 + 6 = 15$',
-    '',
-    'p値の計算:',
-    '小さなサンプルサイズでは厳密法を使用',
-    '大きなサンプルサイズでは正規近似を使用',
-    '厳密法: 全ての可能なランクの組み合わせを考慮',
-    '正規近似: U値を標準正規分布に変換してp値を求める',
-
-    r'正規近似によるp値の計算:',
-    r'U値の期待値: $\mu = \frac{n_1 n_2}{2}$',
-    r'U値の分散: $\sigma^2 = \frac{n_1 n_2 (n_1 + n_2 + 1)}{12}$',
-    r'標準化されたZスコア: $Z = \frac{U - \mu}{\sigma}$',
-    r'Zスコアに基づいてp値を求める: $p = 2 \times (1 - \text{CDF}(Z))$',
-    r'p値が有意水準より小さい場合、統計的に有意な差があると判断'
-]
-
-# テキストをプロット
-for i, text in enumerate(mannwhitneyu_text):
-    draw_text(text, (0.5, 1 - i*0.05), ax=ax)
-
-plt.title("Mann-Whitney U検定の計算式とランクの説明", fontsize=16, pad=20)
-file_path = 'mannwhitneyu_formula_and_rank_explanation.png'
-plt.savefig(file_path, bbox_inches='tight')
+plt.savefig('mannwhitneyu_formula_jp.png')

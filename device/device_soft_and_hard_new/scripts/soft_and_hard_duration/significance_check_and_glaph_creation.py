@@ -1,3 +1,4 @@
+#significance_check_and_glaph_creation.py
 import pandas as pd
 import numpy as np
 import scipy.stats as stats
@@ -28,14 +29,12 @@ def is_normal(data, test_type="shapiro"):
     elif test_type == "ks":
         print("Performing the Kolmogorov-Smirnov test to check for normality in a larger sample.")
         stat, p = stats.kstest(data, 'norm')
-    
     # A p-value greater than the threshold (0.05) suggests normal distribution
     is_normal = p > 0.05
     if is_normal:
         print(f"The data follows a normal distribution (p-value: {p:.33f}).")
     else:
         print(f"The data does not follow a normal distribution (p-value: {p:.33f}).")
-    
     return is_normal
 
 def check_equal_variance(df1, df2, column):
@@ -64,48 +63,55 @@ def compare_groups(df1, df2, column):
         stat, p = stats.mannwhitneyu(df1[column], df2[column])
     significance = "Significant" if p < 0.05 else "Not significant"
     print(f"========================\np-value: {p:.18f} - {significance}\n========================\n")
-    return p
+    return p, significance
 
-def plot_boxplot(df, category_col, period_col, duration_col, output_file):
+def plot_boxplot(df, category_col, period_col, duration_col, output_file, category_results):
     plt.figure(figsize=(12, 8))
     ax = sns.boxplot(x=category_col, y=duration_col, hue=period_col, data=df, palette="hls")
     plt.title('Boxplot of Duration by Category and Experiment Period')
+    for cat, p_val, signif in category_results:
+        plt.text(df[category_col].unique().tolist().index(cat), df[duration_col].max(), f'p={p_val:.4f}, {signif}', ha='center', color='crimson', alpha=0.7)    
     plt.xlabel(category_col)
     plt.ylabel('Duration')
     plt.xticks(rotation=0)
     plt.legend(title=period_col)
     plt.savefig(output_file)
 
-def plot_scatter(df, category_col, period_col, duration_col, output_file):
+def plot_scatter(df, category_col, period_col, duration_col, output_file, category_results):
     plt.figure(figsize=(12, 8))
     categories = df[category_col].unique()
     periods = df[period_col].unique()
-    palette = sns.color_palette("hls", len(categories))
-    period_indices = {period: index for index, period in enumerate(periods)}
-    offset = np.linspace(-0.2, 0.2, len(categories))
+    palette = sns.color_palette("hls", len(periods))
+    category_indices = {category: index for index, category in enumerate(categories)}
+    offset = np.linspace(-0.2, 0.2, len(periods))
     # Settings to add jitter
     jitter_amount = 0.15
-    for category, color, off in zip(categories, palette, offset):
-        for period in periods:
-            period_index = period_indices[period]
-            category_df = df[(df[category_col] == category) & (df[period_col] == period)]
-            if not category_df.empty:
+    for category in categories:
+        for period, color, off in zip(periods, palette, offset):
+            period_index = category_indices[category] + off
+            period_df = df[(df[category_col] == category) & (df[period_col] == period)]
+            if not period_df.empty:
                 # Add jitter and adjust alpha value and data point size
-                jittered_x = period_index + off + np.random.uniform(-jitter_amount, jitter_amount, size=category_df.shape[0])
-                plt.scatter(jittered_x, category_df[duration_col], color=color, alpha=0.5, s=10, label=f'{category} ({period})')
+                jittered_x = np.random.uniform(-jitter_amount, jitter_amount, size=period_df.shape[0]) + period_index
+                plt.scatter(jittered_x, period_df[duration_col], color=color, alpha=0.5, s=10, label=f'{category} ({period})')
+    for cat, p_val, signif in category_results:
+        plt.text(category_indices[cat], df[duration_col].max(), f'p={p_val:.4f}, {signif}', ha='center', color='crimson', alpha=0.7)
     plt.title('Scatter Plot of Duration for Each Category by Period')
-    plt.xlabel(period_col)
+    plt.xlabel(category_col)
     plt.ylabel(duration_col)
-    plt.legend(title=category_col, loc='upper right', bbox_to_anchor=(1.3, 1))
-    plt.xticks(ticks=np.arange(len(periods)), labels=periods)
+    plt.legend(title=period_col, loc='upper right', bbox_to_anchor=(1.3, 1))
+    plt.xticks(ticks=np.arange(len(categories)), labels=categories)
     plt.subplots_adjust(right=0.8)
     plt.savefig(output_file)
 
-def plot_violin(df, category_col, period_col, duration_col, output_file):
+
+def plot_violin(df, category_col, period_col, duration_col, output_file, category_results):
     plt.figure(figsize=(12, 8))
     ax = sns.violinplot(x=category_col, y=duration_col, hue=period_col, data=df, palette="hls", split=True)
     for patch in ax.collections:
         patch.set_alpha(0.8)
+    for cat, p_val, signif in category_results:
+        plt.text(df[category_col].unique().tolist().index(cat), df[duration_col].max(), f'p={p_val:.4f}, {signif}', ha='center', color='crimson', alpha=0.7)
     plt.title('Violin Plot of Duration by Category and Experiment Period')
     plt.xlabel(category_col)
     plt.ylabel('Duration')
@@ -113,51 +119,39 @@ def plot_violin(df, category_col, period_col, duration_col, output_file):
     plt.legend(title=period_col)
     plt.savefig(output_file)
 
-def plot_bar(df, category_col, period_col, duration_col, output_file, significant_categories):
+def plot_bar(df, category_col, period_col, duration_col, output_file, category_results):
     df_grouped = df.groupby([category_col, period_col])[duration_col].sum().reset_index()
     plt.figure(figsize=(12, 8))
     sns.set(style="whitegrid")
     palette = sns.color_palette("hls", len(df_grouped[category_col].unique()))
     bar_plot = sns.barplot(x=category_col, y=duration_col, hue=period_col, data=df_grouped, palette=palette, alpha=0.8)
     plt.title('Total Duration of Each Category for Each Period')
+    for cat, p_val, signif in category_results:
+        plt.text(df_grouped[category_col].unique().tolist().index(cat), df_grouped[duration_col].max(), f'p={p_val:.4f}, {signif}', ha='center', color='crimson', alpha=0.7)
     plt.xlabel(category_col)
     plt.ylabel('Total Duration')
     plt.xticks(rotation=0)
     plt.legend(title=period_col)
     plt.subplots_adjust(bottom=0.3)
-    # Highlight labels of categories with significant differences
-    for label in bar_plot.get_xticklabels():
-        if label.get_text() in significant_categories:
-            label.set_color('crimson')
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
     plt.savefig(output_file)
 
 
-df = pd.read_csv('../data/csv/outlier_removed/device_outlier_removed.csv', dtype={'user': str})
+df = pd.read_csv('../../data/csv/outlier_removed/device_outlier_removed.csv', dtype={'user': str})
 df_1st_half = df[df['days'] == '1st_half']
 df_2nd_half = df[df['days'] == '2nd_half']
 print(df_1st_half['category'].value_counts(dropna=False))
 print(df_2nd_half['category'].value_counts(dropna=False))
 print(f"================================================\n")
-results = {}
-significance_level = 0.05
+category_results = []
 for category in df['category'].unique():
     df1 = df_1st_half[df_1st_half['category'] == category]
     df2 = df_2nd_half[df_2nd_half['category'] == category]
     print(f"category: {category}")
-    p_value = compare_groups(df1, df2, 'duration')
+    p_value, significance = compare_groups(df1, df2, 'duration')
+    category_results.append((category, p_value, significance))
 
-# Create a list of categories judged to be significant differences
-significant_categories = [category for category, (result, _) in results.items() if "Significant difference" in result]
-
-# Generate and save bar plot
-plot_bar(df, 'category', 'days', 'duration', '../data/img/device_soft_and_hard_2exp/barplot.png', significant_categories)
-
-# Generate and save boxplot
-plot_boxplot(df, 'category', 'days', 'duration', '../data/img/device_soft_and_hard_2exp/boxplot.png')
-
-# Generate and save scatter plot
-plot_scatter(df, 'category', 'days', 'duration', '../data/img/device_soft_and_hard_2exp/scatterplot.png')
-
-# Generate and save violin plot
-plot_violin(df, 'category', 'days', 'duration', '../data/img/device_soft_and_hard_2exp/violinplot.png')
+plot_bar(df, 'category', 'days', 'duration', '../../data/img/device_soft_and_hard_2exp/barplot.png', category_results)
+plot_boxplot(df, 'category', 'days', 'duration', '../../data/img/device_soft_and_hard_2exp/boxplot.png', category_results)
+plot_scatter(df, 'category', 'days', 'duration', '../../data/img/device_soft_and_hard_2exp/scatterplot.png', category_results)
+plot_violin(df, 'category', 'days', 'duration', '../../data/img/device_soft_and_hard_2exp/violinplot.png', category_results)

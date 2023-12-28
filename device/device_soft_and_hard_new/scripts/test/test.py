@@ -55,7 +55,7 @@ plt.ylabel('Sum of Values')
 
 # Show plot
 plt.tight_layout()
-plt.savefig('Mann-Whitney-test_and_sum.png')
+plt.savefig('WMW_test_and_sum.png')
 
 # Print the p-value and sum results
 p_value_AB, p_value_AC, significant_AB, significant_AC, sum_A, sum_B, sum_C

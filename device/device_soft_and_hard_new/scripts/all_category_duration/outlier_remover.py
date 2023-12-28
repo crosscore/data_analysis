@@ -53,7 +53,7 @@ def process_data(df, category, column='duration'):
     else:
         return pd.DataFrame()
 
-df = pd.read_csv('../data/csv/add_duration/device_add_duration.csv', dtype={'user': str})
+df = pd.read_csv('../../data/csv/add_duration/device_all_category_add_duration.csv', dtype={'user': str})
 print(df)
 print(df['category'].value_counts(dropna=False))
 print(f"================================================")
@@ -64,7 +64,7 @@ processed_df_1st_half = process_data(df_1st_half, category='category')
 processed_df_2nd_half = process_data(df_2nd_half, category='category')
 processed_df = pd.concat([processed_df_1st_half, processed_df_2nd_half])
 
-output_file = '../data/csv/outlier_removed/device_outlier_removed.csv'
+output_file = '../../data/csv/outlier_removed/device_all_category_outlier_removed.csv'
 os.makedirs(os.path.dirname(output_file), exist_ok=True)
 print(f"\n================================================\n")
 print(processed_df)
