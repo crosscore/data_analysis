@@ -8,62 +8,67 @@ import japanize_matplotlib
 import os
 
 def is_normal(data, test_type="shapiro"):
-    """
-    Assess the normality of a dataset. The Shapiro-Wilk test is used for small samples (< 5000 data points),
-    which is more appropriate for detecting deviations from normality. For larger samples, the 
-    Kolmogorov-Smirnov test is used as it's less sensitive to slight deviations from a normal distribution.
-    
-    Parameters:
-        data (array_like): The data to be tested for normality.
-        test_type (str): The type of normality test to perform ('shapiro' or 'ks').
-        
-    Returns:
-        bool: True if the data is normally distributed, False otherwise.
-    """
     if len(data) < 3:
-        print("Not enough data to perform a normality test.")
         return False
     if test_type == "shapiro":
-        print("Performing the Shapiro-Wilk test to check for normality. (< 5000 data points)")
         stat, p = stats.shapiro(data)
+        test_name = "Shapiro-Wilk"
     elif test_type == "ks":
-        print("Performing the Kolmogorov-Smirnov test to check for normality in a larger sample.")
-        stat, p = stats.kstest(data, 'norm')
-    # A p-value greater than the threshold (0.05) suggests normal distribution
-    is_normal = p > 0.05
-    if is_normal:
-        print(f"The data follows a normal distribution (p-value: {p:.33f}).")
-    else:
-        print(f"The data does not follow a normal distribution (p-value: {p:.33f}).")
-    return is_normal
-
-def check_equal_variance(df1, df2, column):
-    """Check for equal variance using Levene's test"""
-    stat, p = stats.levene(df1[column], df2[column])
+        stat, p = stats.kstest(data, 'norm', args=(np.mean(data), np.std(data, ddof=1)))
+        test_name = "Kolmogorov-Smirnov"
+    result = "Normal" if p > 0.05 else "Not normal"
+    print(f"{test_name}: {result}")
     return p > 0.05
 
-def compare_groups(df1, df2, column):
-    # Check if data is empty or too small
+def check_equal_variance(df1, df2, column, normal=True):
     if df1[column].empty or df2[column].empty or len(df1[column]) < 3 or len(df2[column]) < 3:
-        print(f"Insufficient data in one of the groups for column '{column}'. Skipping test.")
         return None
-    # Determine which normality test to use based on sample size
-    normal_test_type = "shapiro" if len(df1[column]) < 5000 else "ks"
-    # Normality check
-    if is_normal(df1[column], normal_test_type) and is_normal(df2[column], normal_test_type):
-        # Checking for equal variance
-        if check_equal_variance(df1, df2, column):
-            print("Equal variance: Use standard t-test")
-            stat, p = stats.ttest_ind(df1[column], df2[column])
-        else:
-            print("Unequal variance: Use Welch's t-test")
-            stat, p = stats.ttest_ind(df1[column], df2[column], equal_var=False)
+    if normal:
+        stat, p = stats.levene(df1[column], df2[column])
+        test_name = "Levene's"
     else:
-        print("Use Mann-Whitney U test for non-normal distributions")
-        stat, p = stats.mannwhitneyu(df1[column], df2[column])
+        stat, p = stats.bartlett(df1[column], df2[column])
+        test_name = "Brown-Forsythe"
+    result = "Equal variances" if p > 0.05 else "Unequal variances"
+    print(f"{test_name} test: {result}")
+    return p > 0.05
+
+def compare_groups(df1, df2, column, paired=True):
+    if df1[column].empty or df2[column].empty or len(df1[column]) < 3 or len(df2[column]) < 3:
+        return None
+    if paired and len(df1[column]) != len(df2[column]):
+        paired = False
+    normal_test_type = "shapiro" if len(df1[column]) < 5000 else "ks"
+    df1_normal = is_normal(df1[column], normal_test_type)
+    df2_normal = is_normal(df2[column], normal_test_type)
+    test_type = ""
+    if df1_normal and df2_normal:
+        if paired:
+            stat, p = stats.ttest_rel(df1[column], df2[column])
+            test_type = "Paired t-test"
+        else:
+            equal_var = check_equal_variance(df1, df2, column, normal=True)
+            if equal_var:
+                stat, p = stats.ttest_ind(df1[column], df2[column])
+                test_type = "Independent t-test"
+            else:
+                stat, p = stats.ttest_ind(df1[column], df2[column], equal_var=False)
+                test_type = "Welch's t-test"
+    else:
+        equal_var = check_equal_variance(df1, df2, column, normal=False)
+        if equal_var:
+            stat, p = stats.mannwhitneyu(df1[column], df2[column])
+            test_type = "Mann-Whitney U"
+        else:
+            stat, p = stats.ranksums(df1[column], df2[column])
+            test_type = "Wilcoxon rank-sum"
     significance = "Significant" if p < 0.05 else "Not significant"
-    print(f"========================\np-value: {p:.18f} - {significance}\n========================\n")
+    print(f"{test_type}: p-value = {p:.18f} - {significance}")
     return p, significance
+
+def print_statistics(df, category_col, period_col, duration_col):
+    statistics_df = df.groupby([category_col, period_col])[duration_col].agg(['mean', 'var', 'std']).reset_index()
+    print(statistics_df)
 
 def plot_boxplot(df, category_col, period_col, duration_col, output_file, category_results):
     plt.figure(figsize=(12, 8))
@@ -85,7 +90,7 @@ def plot_scatter(df, category_col, period_col, duration_col, output_file, catego
     category_indices = {category: index for index, category in enumerate(categories)}
     offset = np.linspace(-0.2, 0.2, len(periods))
     # Settings to add jitter
-    jitter_amount = 0.15
+    jitter_amount = 0.04
     for category in categories:
         for period, color, off in zip(periods, palette, offset):
             period_index = category_indices[category] + off
@@ -103,7 +108,6 @@ def plot_scatter(df, category_col, period_col, duration_col, output_file, catego
     plt.xticks(ticks=np.arange(len(categories)), labels=categories)
     plt.subplots_adjust(right=0.8)
     plt.savefig(output_file)
-
 
 def plot_violin(df, category_col, period_col, duration_col, output_file, category_results):
     plt.figure(figsize=(12, 8))
@@ -136,22 +140,47 @@ def plot_bar(df, category_col, period_col, duration_col, output_file, category_r
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
     plt.savefig(output_file)
 
+def plot_histograms_by_category_and_days(df, category_col, period_col, duration_col, output_file):
+    categories = df[category_col].unique()
+    periods = df[period_col].unique()
+    nrows = len(categories)
+    ncols = len(periods)
+    fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(ncols*6, nrows*4))
+    for i, category in enumerate(categories):
+        for j, period in enumerate(periods):
+            ax = axes[i, j]
+            subset = df[(df[category_col] == category) & (df[period_col] == period)]
+            sns.histplot(subset[duration_col], kde=True, ax=ax, bins=20, color='skyblue', alpha=0.8)
+            ax.set_title(f'{category} - {period}')
+            ax.set_xlabel(duration_col)
+            ax.set_ylabel('Frequency')
+    plt.tight_layout()
+    plt.savefig(output_file)
 
 df = pd.read_csv('../../data/csv/outlier_removed/device_outlier_removed.csv', dtype={'user': str})
-df_1st_half = df[df['days'] == '1st_half']
-df_2nd_half = df[df['days'] == '2nd_half']
-print(df_1st_half['category'].value_counts(dropna=False))
-print(df_2nd_half['category'].value_counts(dropna=False))
-print(f"================================================\n")
+grouped_df = df.groupby(['user', 'category', 'days'])['duration'].sum().reset_index()
+df_1st_half_sum = grouped_df[grouped_df['days'] == '1st_half']
+df_2nd_half_sum = grouped_df[grouped_df['days'] == '2nd_half']
+combined_df = pd.concat([df_1st_half_sum, df_2nd_half_sum]).reset_index(drop=True)
+print(combined_df)
+print(df_1st_half_sum['category'].value_counts(dropna=False))
+print(df_2nd_half_sum['category'].value_counts(dropna=False))
+print(f"================================================")
+
+print("\n統計量（'category', 'days'）：")
+print_statistics(combined_df, 'category', 'days', 'duration')
+
 category_results = []
 for category in df['category'].unique():
-    df1 = df_1st_half[df_1st_half['category'] == category]
-    df2 = df_2nd_half[df_2nd_half['category'] == category]
-    print(f"category: {category}")
-    p_value, significance = compare_groups(df1, df2, 'duration')
+    df1 = df_1st_half_sum[df_1st_half_sum['category'] == category]
+    df2 = df_2nd_half_sum[df_2nd_half_sum['category'] == category]
+    print(f"\ncategory: {category}")
+    p_value, significance = compare_groups(df1, df2, 'duration', paired=True)
     category_results.append((category, p_value, significance))
 
-plot_bar(df, 'category', 'days', 'duration', '../../data/img/device_soft_and_hard_2exp/barplot.png', category_results)
-plot_boxplot(df, 'category', 'days', 'duration', '../../data/img/device_soft_and_hard_2exp/boxplot.png', category_results)
-plot_scatter(df, 'category', 'days', 'duration', '../../data/img/device_soft_and_hard_2exp/scatterplot.png', category_results)
-plot_violin(df, 'category', 'days', 'duration', '../../data/img/device_soft_and_hard_2exp/violinplot.png', category_results)
+plot_bar(combined_df, 'category', 'days', 'duration', '../../data/img/device_soft_and_hard_2exp/barplot.png', category_results)
+plot_boxplot(combined_df, 'category', 'days', 'duration', '../../data/img/device_soft_and_hard_2exp/boxplot.png', category_results)
+plot_scatter(combined_df, 'category', 'days', 'duration', '../../data/img/device_soft_and_hard_2exp/scatterplot.png', category_results)
+plot_violin(combined_df, 'category', 'days', 'duration', '../../data/img/device_soft_and_hard_2exp/violinplot.png', category_results)
+plot_histograms_by_category_and_days(combined_df, 'category', 'days', 'duration', '../../data/img/device_soft_and_hard_2exp/histogram.png')
+plt.close('all')
