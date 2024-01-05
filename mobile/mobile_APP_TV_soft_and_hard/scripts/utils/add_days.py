@@ -1,9 +1,9 @@
-#add_days.py
+#add_exp2_days.py
 import pandas as pd
 from datetime import datetime, timedelta
 import os
 
-date_ranges = {
+exp2_ranges = {
     '0765': ('2022-11-23', '2022-12-06'),
     '0816': ('2022-11-22', '2022-12-05'),
     '1143': ('2022-11-26', '2022-12-09'),
@@ -24,50 +24,36 @@ date_ranges = {
 exclusion_date_user2387 = ['2022-11-20', '2022-11-21', '2022-11-22', '2022-11-23']
 exclusion_dates = pd.to_datetime(exclusion_date_user2387)
 
-# Read the data
 df_app = pd.read_csv("../../data/csv/original/APP_IQR.csv", dtype={'user': str})
 df_tv = pd.read_csv("../../data/csv/original/TV_IQR.csv", dtype={'user': str})
 
-# Function to add 'days' column
-def add_days_to_df(df):
-    # Exclude certain dates for user '2387'
+def calculate_exp2_days(row):
+    user = row['user']
+    date = row['date']
+    start_date = pd.Timestamp(exp2_ranges[user][0])
+    if user == '2387':
+        excluded_days_count = sum([1 for excl_date in exclusion_dates if start_date <= excl_date <= date])
+        return (date - start_date).days + 1 - excluded_days_count
+    else:
+        return (date - start_date).days + 1
+
+def add_exp2_days(df):
     for date in exclusion_date_user2387:
         df = df[~((df['user'] == '2387') & df['date'].str.contains(date))]
-
     df['date'] = pd.to_datetime(df['date'])
     df.sort_values(by=['user', 'date'], ascending=[True, True], inplace=True)
-
-    # Delete data outside date_ranges
-    for user, (start, end) in date_ranges.items():
+    for user, (start, end) in exp2_ranges.items():
         end_date = pd.Timestamp(end) + timedelta(days=1)
         df = df[~((df['user'] == user) & ((df['date'] < pd.Timestamp(start)) | (df['date'] >= end_date)))]
-
-    # Function to calculate days
-    def calculate_days(row):
-        user = row['user']
-        date = row['date']
-        start_date = pd.Timestamp(date_ranges[user][0])
-        if user == '2387':
-            excluded_days_count = sum([1 for excl_date in exclusion_dates if start_date <= excl_date <= date])
-            return (date - start_date).days + 1 - excluded_days_count
-        else:
-            return (date - start_date).days + 1
-
-    df['days'] = df.apply(calculate_days, axis=1)
+    df['days'] = df.apply(calculate_exp2_days, axis=1)
     return df
 
-# Apply the function to both dataframes
-df_app = add_days_to_df(df_app)
-df_tv = add_days_to_df(df_tv)
-
+df_app = add_exp2_days(df_app)
+df_tv = add_exp2_days(df_tv)
 
 output_dir = '../../data/csv/add_days/'
 os.makedirs(os.path.dirname(output_dir), exist_ok=True)
-
-# Save the modified dataframes
 df_app.to_csv(f"{output_dir}APP_add_days.csv", index=False)
 df_tv.to_csv(f"{output_dir}TV_add_days.csv", index=False)
-
-# Print results
 print(df_app.groupby('user')['days'].max())
 print(df_tv.groupby('user')['days'].max())
