@@ -77,6 +77,9 @@ def plot_boxplot(df, category_col, period_col, duration_col, output_file, catego
     n_rows = (n_categories + 2) // 3
     fig_width = 18 if n_cols < 3 else 16
     fig, axes = plt.subplots(nrows=n_rows, ncols=n_cols, figsize=(fig_width, 24), sharey=True)
+    # Convert axes to an array if it's not already one
+    if n_rows == 1 and n_cols == 1:
+        axes = np.array([axes])
     axes = axes.flatten()
     for i, category in enumerate(categories):
         ax = axes[i]
@@ -93,6 +96,7 @@ def plot_boxplot(df, category_col, period_col, duration_col, output_file, catego
     for ax in axes:
         if ax.get_legend() is not None:
             ax.get_legend().remove()
+    axes = axes.flatten()
     fig.legend(handles, labels, title=period_col, loc='upper right', bbox_to_anchor=(0.99, 0.99), borderaxespad=0.)
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
@@ -107,6 +111,9 @@ def plot_scatter(df, category_col, period_col, duration_col, output_file, catego
     n_rows = (n_categories + 2) // 3
     fig_width = 18 if n_cols < 3 else 16
     fig, axes = plt.subplots(nrows=n_rows, ncols=n_cols, figsize=(fig_width, 24), sharey=True)
+    # Convert axes to an array if it's not already one
+    if n_rows == 1 and n_cols == 1:
+        axes = np.array([axes])
     axes = axes.flatten()
     x_points = {period: i * 0.5 for i, period in enumerate(periods)}
     for i, category in enumerate(categories):
@@ -141,6 +148,9 @@ def plot_violin(df, category_col, period_col, duration_col, output_file, categor
     n_rows = (n_categories + 2) // 3
     fig_width = 18 if n_cols < 3 else 16
     fig, axes = plt.subplots(nrows=n_rows, ncols=n_cols, figsize=(fig_width, 24), sharey=True)
+    # Convert axes to an array if it's not already one
+    if n_rows == 1 and n_cols == 1:
+        axes = np.array([axes])
     axes = axes.flatten()
     for i, category in enumerate(categories):
         ax = axes[i]
@@ -171,6 +181,9 @@ def plot_bar(df, category_col, period_col, duration_col, output_file, category_r
     n_rows = (n_categories + 2) // 3
     fig_width = 18 if n_cols < 3 else 16
     fig, axes = plt.subplots(nrows=n_rows, ncols=n_cols, figsize=(fig_width, 24), sharey=True)
+    # Convert axes to an array if it's not already one
+    if n_rows == 1 and n_cols == 1:
+        axes = np.array([axes])
     axes = axes.flatten()
     for i, category in enumerate(categories):
         ax = axes[i]
@@ -195,26 +208,34 @@ def plot_bar(df, category_col, period_col, duration_col, output_file, category_r
 def plot_histograms(df, category_col, period_col, duration_col, output_file):
     categories = df[category_col].unique()
     periods = df[period_col].unique()
-    nrows = -(-len(categories) // 2)
-    ncols = len(periods) * 2
-    fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(ncols*3, nrows*4), sharex=True, sharey=True)
+    n_rows = -(-len(categories) // 2)
+    n_cols = len(periods) * 2
+    fig, axes = plt.subplots(nrows=n_rows, ncols=n_cols, figsize=(n_cols*3, n_rows*4), sharex=True, sharey=True)
+    # Convert axes to an array if it's not already one
+    if n_rows == 1 and n_cols == 1:
+        axes = np.array([axes])
     axes = axes.flatten()
     for i, category in enumerate(categories):
         row = i // 2
         col = i % 2 * len(periods)
         for j, period in enumerate(periods):
-            ax = axes[row * ncols + col + j]
+            ax = axes[row * n_cols + col + j]
             subset = df[(df[category_col] == category) & (df[period_col] == period)]
             sns.histplot(subset[duration_col], kde=True, ax=ax, bins=20, color='skyblue', alpha=0.8)
             ax.set_title(f'{category} - {period}')
-            ax.set_xlabel(duration_col if row == nrows - 1 else '')
+            ax.set_xlabel(duration_col if row == n_rows - 1 else '')
             ax.set_ylabel('Frequency' if col == 0 else '')
     plt.tight_layout()
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
     plt.savefig(output_file)
 
 
-df = pd.read_csv('../data/csv/outlier_removed/TV_EP_outlier_removed.csv', dtype={'user': str})
+input_file_path = '../data/csv/complete/TV.csv'
+base = os.path.basename(input_file_path)
+filename, _ = os.path.splitext(base)
+output_folder = f'../data/img/{filename}'
+
+df = pd.read_csv(input_file_path, dtype={'user': str})
 df_EP1 = df[df['period'] == 'EP1']
 df_EP2 = df[df['period'] == 'EP2']
 combined_df = pd.concat([df_EP1, df_EP2]).reset_index(drop=True)
@@ -238,9 +259,9 @@ for category in df['category'].unique():
     else:
         print("Unable to perform statistical test because data is less than 3.")
 
-plot_bar(combined_df, 'category', 'period', 'duration', '../data/img/TV_2exp/barplot.png', category_results)
-plot_boxplot(combined_df, 'category', 'period', 'duration', '../data/img/TV_2exp/boxplot.png', category_results)
-plot_scatter(combined_df, 'category', 'period', 'duration', '../data/img/TV_2exp/scatterplot.png', category_results)
-plot_violin(combined_df, 'category', 'period', 'duration', '../data/img/TV_2exp/violinplot.png', category_results)
-plot_histograms(combined_df, 'category', 'period', 'duration', '../data/img/TV_2exp/histogram.png')
-plt.close()
+plot_bar(combined_df, 'category', 'period', 'duration', f'{output_folder}/barplot.png', category_results)
+plot_boxplot(combined_df, 'category', 'period', 'duration', f'{output_folder}/boxplot.png', category_results)
+plot_scatter(combined_df, 'category', 'period', 'duration', f'{output_folder}/scatterplot.png', category_results)
+plot_violin(combined_df, 'category', 'period', 'duration', f'{output_folder}/violinplot.png', category_results)
+plot_histograms(combined_df, 'category', 'period', 'duration', f'{output_folder}/histogram.png')
+plt.close('all')
