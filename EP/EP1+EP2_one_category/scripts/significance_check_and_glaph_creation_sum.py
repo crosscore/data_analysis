@@ -211,7 +211,6 @@ def plot_histograms(df, category_col, period_col, duration_col, output_file):
     n_rows = -(-len(categories) // 2)
     n_cols = len(periods) * 2
     fig, axes = plt.subplots(nrows=n_rows, ncols=n_cols, figsize=(n_cols*3, n_rows*4), sharex=True, sharey=True)
-    # Convert axes to an array if it's not already one
     if n_rows == 1 and n_cols == 1:
         axes = np.array([axes])
     axes = axes.flatten()
@@ -221,7 +220,9 @@ def plot_histograms(df, category_col, period_col, duration_col, output_file):
         for j, period in enumerate(periods):
             ax = axes[row * n_cols + col + j]
             subset = df[(df[category_col] == category) & (df[period_col] == period)]
-            sns.histplot(subset[duration_col], kde=True, ax=ax, bins=20, color='skyblue', alpha=0.8)
+            n_data_points = len(subset)
+            bin_nums = 1 + int(np.log2(n_data_points)) if n_data_points > 0 else 1
+            sns.histplot(subset[duration_col], kde=True, ax=ax, bins=bin_nums, color='skyblue', alpha=0.8)
             ax.set_title(f'{category} - {period}')
             ax.set_xlabel(duration_col if row == n_rows - 1 else '')
             ax.set_ylabel('Frequency' if col == 0 else '')
@@ -230,7 +231,7 @@ def plot_histograms(df, category_col, period_col, duration_col, output_file):
     plt.savefig(output_file)
 
 
-input_file_path = '../data/csv/complete/MobileApp.csv'
+input_file_path = '../data/csv/complete/TV.csv'
 base = os.path.basename(input_file_path)
 filename, _ = os.path.splitext(base)
 output_folder = f'../data/img/{filename}'
