@@ -77,7 +77,6 @@ def plot_boxplot(df, category_col, period_col, duration_col, output_file, catego
     n_rows = (n_categories + 2) // 3
     fig_width = 18 if n_cols < 3 else 16
     fig, axes = plt.subplots(nrows=n_rows, ncols=n_cols, figsize=(fig_width, 24), sharey=True)
-    # Convert axes to an array if it's not already one
     if n_rows == 1 and n_cols == 1:
         axes = np.array([axes])
     axes = axes.flatten()
@@ -90,7 +89,8 @@ def plot_boxplot(df, category_col, period_col, duration_col, output_file, catego
         ax.set_ylabel('Duration' if i % n_cols == 0 else '')
         cat_result = next((item for item in category_results if item[0] == category), None)
         if cat_result:
-            ax.text(0.5, 0.97, f'p={cat_result[1]:.4f}, {cat_result[2]}', ha='center', transform=ax.transAxes, color='crimson', alpha=0.7)
+            text_color = 'crimson' if cat_result[2] == "Significant" else 'black'
+            ax.text(0.5, 0.90, f'p={cat_result[1]:.4f}, {cat_result[2]}', ha='center', transform=ax.transAxes, color=text_color, alpha=0.7, fontsize=18)
     plt.suptitle('Boxplot of Duration by Category and Experiment Period')
     handles, labels = ax.get_legend_handles_labels()
     for ax in axes:
@@ -111,7 +111,6 @@ def plot_scatter(df, category_col, period_col, duration_col, output_file, catego
     n_rows = (n_categories + 2) // 3
     fig_width = 18 if n_cols < 3 else 16
     fig, axes = plt.subplots(nrows=n_rows, ncols=n_cols, figsize=(fig_width, 24), sharey=True)
-    # Convert axes to an array if it's not already one
     if n_rows == 1 and n_cols == 1:
         axes = np.array([axes])
     axes = axes.flatten()
@@ -130,7 +129,8 @@ def plot_scatter(df, category_col, period_col, duration_col, output_file, catego
 
         cat_result = next((item for item in category_results if item[0] == category), None)
         if cat_result:
-            ax.text(0.5, 0.97, f'p={cat_result[1]:.4f}, {cat_result[2]}', ha='center', transform=ax.transAxes, color='crimson', alpha=0.7)
+            text_color = 'crimson' if cat_result[2] == "Significant" else 'black'
+            ax.text(0.5, 0.90, f'p={cat_result[1]:.4f}, {cat_result[2]}', ha='center', transform=ax.transAxes, color=text_color, alpha=0.7, fontsize=18)
     plt.suptitle('Scatter Plot of Duration for Each Category by Period')
     for ax in axes:
         if ax.get_legend() is not None:
@@ -148,7 +148,6 @@ def plot_violin(df, category_col, period_col, duration_col, output_file, categor
     n_rows = (n_categories + 2) // 3
     fig_width = 18 if n_cols < 3 else 16
     fig, axes = plt.subplots(nrows=n_rows, ncols=n_cols, figsize=(fig_width, 24), sharey=True)
-    # Convert axes to an array if it's not already one
     if n_rows == 1 and n_cols == 1:
         axes = np.array([axes])
     axes = axes.flatten()
@@ -163,7 +162,8 @@ def plot_violin(df, category_col, period_col, duration_col, output_file, categor
         ax.set_ylabel('Duration' if i % n_cols == 0 else '')
         cat_result = next((item for item in category_results if item[0] == category), None)
         if cat_result:
-            ax.text(0.5, 0.97, f'p={cat_result[1]:.4f}, {cat_result[2]}', ha='center', transform=ax.transAxes, color='crimson', alpha=0.7)
+            text_color = 'crimson' if cat_result[2] == "Significant" else 'black'
+            ax.text(0.5, 0.90, f'p={cat_result[1]:.4f}, {cat_result[2]}', ha='center', transform=ax.transAxes, color=text_color, alpha=0.7, fontsize=18)
     plt.suptitle('Violin Plot of Duration by Category and Experiment Period')
     handles, labels = axes[0].get_legend_handles_labels()
     for ax in axes:
@@ -181,7 +181,6 @@ def plot_bar(df, category_col, period_col, duration_col, output_file, category_r
     n_rows = (n_categories + 2) // 3
     fig_width = 18 if n_cols < 3 else 16
     fig, axes = plt.subplots(nrows=n_rows, ncols=n_cols, figsize=(fig_width, 24), sharey=True)
-    # Convert axes to an array if it's not already one
     if n_rows == 1 and n_cols == 1:
         axes = np.array([axes])
     axes = axes.flatten()
@@ -194,7 +193,8 @@ def plot_bar(df, category_col, period_col, duration_col, output_file, category_r
         ax.set_ylabel('Total Duration' if i % n_cols == 0 else '')
         cat_result = next((item for item in category_results if item[0] == category), None)
         if cat_result:
-            ax.text(0.5, 0.97, f'p={cat_result[1]:.4f}, {cat_result[2]}', ha='center', transform=ax.transAxes, color='crimson', alpha=0.7)
+            text_color = 'crimson' if cat_result[2] == "Significant" else 'black'
+            ax.text(0.5, 0.90, f'p={cat_result[1]:.4f}, {cat_result[2]}', ha='center', transform=ax.transAxes, color=text_color, alpha=0.7, fontsize=18)
     plt.suptitle('Total Duration of Each Category for Each Period')
     handles, labels = axes[0].get_legend_handles_labels()
     for ax in axes:
@@ -230,7 +230,8 @@ def plot_histograms(df, category_col, period_col, duration_col, output_file):
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
     plt.savefig(output_file)
 
-input_file_path = '../data/csv/complete/TV.csv'
+
+input_file_path = '../data/csv/complete/device.csv'
 base = os.path.basename(input_file_path)
 filename, _ = os.path.splitext(base)
 output_folder = f'../data/img/{filename}'
