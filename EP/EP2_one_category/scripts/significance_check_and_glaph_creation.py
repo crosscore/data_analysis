@@ -12,12 +12,12 @@ def is_normal(data, test_type="shapiro"):
         return False
     if test_type == "shapiro":
         stat, p = stats.shapiro(data)
-        test_name = "Shapiro-Wilk"
+        test_name = "Shapiro-Wilk test "
     elif test_type == "ks":
         stat, p = stats.kstest(data, 'norm', args=(np.mean(data), np.std(data, ddof=1)))
         test_name = "Kolmogorov-Smirnov"
     result = "Normal" if p > 0.05 else "Not normal"
-    print(f"{test_name}: {result}")
+    print(f"{test_name}: p-value = {p:.18f} - {result}")
     return p > 0.05
 
 def check_equal_variance(df1, df2, column, normal=True):
@@ -25,12 +25,12 @@ def check_equal_variance(df1, df2, column, normal=True):
         return None
     if normal:
         stat, p = stats.levene(df1[column], df2[column])
-        test_name = "Levene's"
+        test_name = "Levene's test     "
     else:
         stat, p = stats.bartlett(df1[column], df2[column])
-        test_name = "Brown-Forsythe"
+        test_name = "Brown-Forsythe    "
     result = "Equal variances" if p > 0.05 else "Unequal variances"
-    print(f"{test_name} test: {result}")
+    print(f"{test_name}: p-value = {p:.18f} - {result}")
     return p > 0.05
 
 def compare_groups(df1, df2, column, paired=True):
@@ -45,7 +45,7 @@ def compare_groups(df1, df2, column, paired=True):
     if df1_normal and df2_normal:
         if paired:
             stat, p = stats.ttest_rel(df1[column], df2[column])
-            test_type = "Paired t-test"
+            test_type = "Paired t-test     "
         else:
             equal_var = check_equal_variance(df1, df2, column, normal=True)
             if equal_var:
@@ -53,15 +53,15 @@ def compare_groups(df1, df2, column, paired=True):
                 test_type = "Independent t-test"
             else:
                 stat, p = stats.ttest_ind(df1[column], df2[column], equal_var=False)
-                test_type = "Welch's t-test"
+                test_type = "Welch's t-test    "
     else:
         equal_var = check_equal_variance(df1, df2, column, normal=False)
         if equal_var:
             stat, p = stats.mannwhitneyu(df1[column], df2[column])
-            test_type = "Mann-Whitney U"
+            test_type = "Mann-Whitney U    "
         else:
             stat, p = stats.ranksums(df1[column], df2[column])
-            test_type = "Wilcoxon rank-sum"
+            test_type = "Wilcoxon rank-sum "
     significance = "Significant" if p < 0.05 else "Not significant"
     print(f"{test_type}: p-value = {p:.18f} - {significance}")
     return p, significance
