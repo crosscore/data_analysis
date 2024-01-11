@@ -231,7 +231,7 @@ def plot_histograms(df, category_col, period_col, duration_col, output_file):
     plt.savefig(output_file)
 
 
-input_file_path = '../data/csv/complete/MobileApp.csv'
+input_file_path = '../data/csv/complete/TV.csv'
 base = os.path.basename(input_file_path)
 filename, _ = os.path.splitext(base)
 output_folder = f'../data/img/{filename}'

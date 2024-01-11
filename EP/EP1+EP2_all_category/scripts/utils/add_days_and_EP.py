@@ -74,6 +74,6 @@ def create_combined_df(input_csv_path, output_dir):
     print(combined_df.groupby('user')['days'].max())
     print("Combined dataframe saved successfully.")
 
-input_csv_path = "../../data/csv/original/device_fix.csv"
+input_csv_path = "../../data/csv/original/APP_fix.csv"
 output_dir = "../../data/csv/add_days"
 create_combined_df(input_csv_path, output_dir)

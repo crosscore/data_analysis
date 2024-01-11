@@ -6,6 +6,9 @@ import os
 
 def is_normal_shapiro(data):
     print("Performing the Shapiro-Wilk test to check for normality. (< 5000 data points)")
+    if np.ptp(data) == 0:
+        print("Data range is zero, skipping the test.")
+        return False
     stat, p = stats.shapiro(data)
     return p > 0.05
 
@@ -14,39 +17,40 @@ def is_normal_ks(data):
     _, p = stats.kstest(data, 'norm')
     return p > 0.05
 
-def remove_outliers(df, column, normal_test='shapiro'):
+def remove_outliers(df, column):
     data = df[column]
     if len(data) < 3:
         print("Data length is less than 3, returning original data.")
         return df
-    if normal_test == 'shapiro':
+    if len(data) < 5000:
         normal = is_normal_shapiro(data)
     else:
-        normal = is_normal_ks(data)
+        print("Large sample size, skipping normality test.")
+        normal = False
     if normal:
-        print(f"Applying normal distribution outlier removal.")
+        print(f"Normal distribution. Applying 3σ Outlier Removal.")
         mean = np.mean(data)
         std = np.std(data)
-        outliers = np.abs(data - mean) > 2 * std
+        outliers = np.abs(data - mean) > 3 * std
     else:
-        print(f"Not a normal distribution. Applying IQR outlier removal.")
+        print(f"Not normal. Applying 3.0 IQR Outlier Removal.")
         q1 = np.percentile(data, 25)
         q3 = np.percentile(data, 75)
         iqr = q3 - q1
-        lower_bound = q1 - 1.5 * iqr
-        upper_bound = q3 + 1.5 * iqr
+        lower_bound = q1 - 3.0 * iqr
+        upper_bound = q3 + 3.0 * iqr
         outliers = (data < lower_bound) | (data > upper_bound)
     return df[~outliers]
 
 
-input_file_name = '../data/csv/add_days/MobileApp_EP.csv'
+input_file_name = '../data/csv/add_days/APP.csv'
 df = pd.read_csv(input_file_name, dtype={'user': str})
 print(df)
 print(df['category'].value_counts(dropna=False))
 print(f"================================================")
 
-normal_test = 'shapiro' if len(df['duration']) < 5000 else 'ks'
-df = remove_outliers(df, 'duration', normal_test)
+grouped = df.groupby(['user', 'category'])
+df = grouped.apply(lambda x: remove_outliers(x, 'duration')).reset_index(drop=True)
 
 base = os.path.basename(input_file_name)
 filename, ext = os.path.splitext(base)

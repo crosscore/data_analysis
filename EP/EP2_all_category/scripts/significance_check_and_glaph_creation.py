@@ -231,7 +231,7 @@ def plot_histograms(df, category_col, period_col, duration_col, output_file):
     plt.savefig(output_file)
 
 
-input_file_path = '../data/csv/complete/MobileApp.csv'
+input_file_path = '../data/csv/complete/TV.csv'
 base = os.path.basename(input_file_path)
 filename, _ = os.path.splitext(base)
 output_folder = f'../data/img/{filename}'
@@ -253,7 +253,7 @@ for category in df['category'].unique():
     ep1 = df_EP1[df_EP1['category'] == category]
     ep2 = df_EP2[df_EP2['category'] == category]
     print(f"\ncategory: {category}")
-    result = compare_groups(ep1, ep2, 'duration', paired=True)
+    result = compare_groups(ep1, ep2, 'duration', paired=True) #paired=True
     if result is not None:
         p_value, significance = result
         category_results.append((category, p_value, significance))
