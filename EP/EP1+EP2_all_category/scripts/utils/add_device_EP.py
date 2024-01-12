@@ -1,6 +1,6 @@
 import pandas as pd
 
-df = pd.read_csv("../../data/csv/add_days/device_fix_EP.csv", dtype={'user': str})
+df = pd.read_csv("../../data/csv/add_days/device.csv", dtype={'user': str})
 print(df)
 
 df.loc[df['days'] <= 7, 'period'] = 'EP1'

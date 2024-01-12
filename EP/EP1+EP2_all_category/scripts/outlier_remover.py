@@ -42,22 +42,29 @@ def remove_outliers(df, column):
         outliers = (data < lower_bound) | (data > upper_bound)
     return df[~outliers]
 
+input_folder = '../data/csv/add_days/'
+output_folder = '../data/csv/outlier_removed/'
+os.makedirs(output_folder, exist_ok=True)
 
-input_file_name = '../data/csv/add_days/APP.csv'
-df = pd.read_csv(input_file_name, dtype={'user': str})
-print(df)
-print(df['category'].value_counts(dropna=False))
-print(f"================================================")
+for file in os.listdir(input_folder):
+    if file.endswith(".csv"):
+        input_file_name = os.path.join(input_folder, file)
 
-grouped = df.groupby(['user', 'category'])
-df = grouped.apply(lambda x: remove_outliers(x, 'duration')).reset_index(drop=True)
+        df = pd.read_csv(input_file_name, dtype={'user': str})
+        print(df)
+        print(df['category'].value_counts(dropna=False))
+        print(f"================================================")
 
-base = os.path.basename(input_file_name)
-filename, ext = os.path.splitext(base)
-output_file = f'../data/csv/outlier_removed/{filename}_outlier_removed.csv'
-os.makedirs(os.path.dirname(output_file), exist_ok=True)
+        grouped = df.groupby(['user', 'category'])
+        df = grouped.apply(lambda x: remove_outliers(x, 'duration')).reset_index(drop=True)
 
-print(f"\n================================================\n")
-print(df)
-print(df['category'].value_counts(dropna=False))
-df.to_csv(output_file, index=False)
+        base = os.path.basename(input_file_name)
+        filename, ext = os.path.splitext(base)
+        output_file = os.path.join(output_folder, f'{filename}.csv')
+
+        print(f"\n================================================\n")
+        print(df)
+        print(df['category'].value_counts(dropna=False))
+
+        df = df.sort_values(by=['period', 'user', 'date', 'category'])
+        df.to_csv(output_file, index=False)

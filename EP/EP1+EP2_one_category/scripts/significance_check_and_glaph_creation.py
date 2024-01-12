@@ -231,38 +231,45 @@ def plot_histograms(df, category_col, period_col, duration_col, output_file):
     plt.savefig(output_file)
 
 
-input_file_path = '../data/csv/complete/TV.csv'
-base = os.path.basename(input_file_path)
-filename, _ = os.path.splitext(base)
-output_folder = f'../data/img/{filename}'
+input_folder = '../data/csv/complete/'
+output_folder_base = '../data/img/'
+os.makedirs(output_folder_base, exist_ok=True)
 
-df = pd.read_csv(input_file_path, dtype={'user': str})
-df_EP1 = df[df['period'] == 'EP1']
-df_EP2 = df[df['period'] == 'EP2']
-combined_df = pd.concat([df_EP1, df_EP2]).reset_index(drop=True)
-print(combined_df)
-print(df_EP1['category'].value_counts(dropna=False))
-print(df_EP2['category'].value_counts(dropna=False))
-print(f"================================================")
+for file in os.listdir(input_folder):
+    if file.endswith(".csv"):
+        input_file_path = os.path.join(input_folder, file)
+        base = os.path.basename(input_file_path)
+        filename, _ = os.path.splitext(base)
+        output_folder = os.path.join(output_folder_base, filename)
 
-print("\n統計量（'category', 'period'）：")
-print_statistics(combined_df, 'category', 'period', 'duration')
+        df = pd.read_csv(input_file_path, dtype={'user': str})
+        df_EP1 = df[df['period'] == 'EP1']
+        df_EP2 = df[df['period'] == 'EP2']
+        combined_df = pd.concat([df_EP1, df_EP2]).reset_index(drop=True)
+        print(combined_df)
+        print(df_EP1['category'].value_counts(dropna=False))
+        print(df_EP2['category'].value_counts(dropna=False))
+        print(f"================================================")
 
-category_results = []
-for category in df['category'].unique():
-    ep1 = df_EP1[df_EP1['category'] == category]
-    ep2 = df_EP2[df_EP2['category'] == category]
-    print(f"\ncategory: {category}")
-    result = compare_groups(ep1, ep2, 'duration', paired=True) #paired=True
-    if result is not None:
-        p_value, significance = result
-        category_results.append((category, p_value, significance))
-    else:
-        print("Unable to perform statistical test because data is less than 3.")
+        print("\n統計量（'category', 'period'）：")
+        print_statistics(combined_df, 'category', 'period', 'duration')
+        
+        category_results = []
+        for category in df['category'].unique():
+            ep1 = df_EP1[df_EP1['category'] == category]
+            ep2 = df_EP2[df_EP2['category'] == category]
+            print(f"\ncategory: {category}")
+            result = compare_groups(ep1, ep2, 'duration', paired=True) #paired=True
+            if result is not None:
+                p_value, significance = result
+                category_results.append((category, p_value, significance))
+            else:
+                print("Unable to perform statistical test because data is less than 3.")
 
-plot_bar(combined_df, 'category', 'period', 'duration', f'{output_folder}/barplot.png', category_results)
-plot_boxplot(combined_df, 'category', 'period', 'duration', f'{output_folder}/boxplot.png', category_results)
-plot_scatter(combined_df, 'category', 'period', 'duration', f'{output_folder}/scatterplot.png', category_results)
-plot_violin(combined_df, 'category', 'period', 'duration', f'{output_folder}/violinplot.png', category_results)
-plot_histograms(combined_df, 'category', 'period', 'duration', f'{output_folder}/histogram.png')
-plt.close('all')
+        os.makedirs(output_folder, exist_ok=True)
+        plot_bar(combined_df, 'category', 'period', 'duration', f'{output_folder}/barplot.png', category_results)
+        plot_boxplot(combined_df, 'category', 'period', 'duration', f'{output_folder}/boxplot.png', category_results)
+        plot_scatter(combined_df, 'category', 'period', 'duration', f'{output_folder}/scatterplot.png', category_results)
+        plot_violin(combined_df, 'category', 'period', 'duration', f'{output_folder}/violinplot.png', category_results)
+        plot_histograms(combined_df, 'category', 'period', 'duration', f'{output_folder}/histogram.png')
+        plt.close('all')

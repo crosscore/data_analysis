@@ -4,7 +4,7 @@ import os
 
 def create_combined_df(input_csv_path, output_dir):
     base_filename = os.path.basename(input_csv_path)
-    output_filename = base_filename.replace('.csv', '_EP.csv')
+    output_filename = base_filename.replace('.csv', '.csv')
     exp1_start_date = pd.to_datetime('2022-10-22')
     exp1_end_date = pd.to_datetime('2022-11-04') + timedelta(days=1)
     exp2_ranges = {
@@ -74,6 +74,13 @@ def create_combined_df(input_csv_path, output_dir):
     print(combined_df.groupby('user')['days'].max())
     print("Combined dataframe saved successfully.")
 
-input_csv_path = "../../data/csv/original/APP_fix.csv"
-output_dir = "../../data/csv/add_days"
-create_combined_df(input_csv_path, output_dir)
+def process_all_files(input_folder, output_folder):
+    for file in os.listdir(input_folder):
+        if file.endswith(".csv"):
+            input_csv_path = os.path.join(input_folder, file)
+            create_combined_df(input_csv_path, output_folder)
+
+input_folder = "../../data/csv/original/"
+output_folder = "../../data/csv/add_days"
+os.makedirs(output_folder, exist_ok=True)
+process_all_files(input_folder, output_folder)
