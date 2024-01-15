@@ -68,11 +68,11 @@ def compare_groups(df1, df2, column, paired=True):
     print(f"{test_type}: p-value = {p:.18f} - {significance}")
     return p, significance
 
-def print_statistics(df, category_col, period_col, duration_col):
-    statistics_df = df.groupby([category_col, period_col])[duration_col].agg(['mean', 'var', 'std']).reset_index()
+def print_statistics(df, category_col, period_col, view_counts_col):
+    statistics_df = df.groupby([category_col, period_col])[view_counts_col].agg(['mean', 'var', 'std']).reset_index()
     print(statistics_df)
 
-def plot_boxplot(df, category_col, period_col, duration_col, output_file, category_results):
+def plot_boxplot(df, category_col, period_col, view_counts_col, output_file, category_results):
     categories = df[category_col].unique()
     n_categories = len(categories)
     n_cols = min(n_categories, 3)
@@ -85,15 +85,15 @@ def plot_boxplot(df, category_col, period_col, duration_col, output_file, catego
     for i, category in enumerate(categories):
         ax = axes[i]
         category_df = df[df[category_col] == category]
-        sns.boxplot(x=category_col, y=duration_col, hue=period_col, data=category_df, ax=ax, palette="hls")
+        sns.boxplot(x=category_col, y=view_counts_col, hue=period_col, data=category_df, ax=ax, palette="hls")
         ax.set_title(category)
         ax.set_xlabel('')
-        ax.set_ylabel('Duration' if i % n_cols == 0 else '')
+        ax.set_ylabel('view_counts' if i % n_cols == 0 else '')
         cat_result = next((item for item in category_results if item[0] == category), None)
         if cat_result:
             text_color = 'crimson' if cat_result[2] == "Significant" else 'black'
             ax.text(0.5, 0.90, f'p={cat_result[1]:.4f}, {cat_result[2]}', ha='center', transform=ax.transAxes, color=text_color, alpha=0.7, fontsize=18)
-    plt.suptitle('Boxplot of Duration by Category and Experiment Period')
+    plt.suptitle('Boxplot of view_counts by Category and Experiment Period')
     handles, labels = ax.get_legend_handles_labels()
     for ax in axes:
         if ax.get_legend() is not None:
@@ -104,7 +104,7 @@ def plot_boxplot(df, category_col, period_col, duration_col, output_file, catego
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
     plt.savefig(output_file)
 
-def plot_scatter(df, category_col, period_col, duration_col, output_file, category_results):
+def plot_scatter(df, category_col, period_col, view_counts_col, output_file, category_results):
     categories = df[category_col].unique()
     periods = df[period_col].unique().tolist()
     n_categories = len(categories)
@@ -122,9 +122,9 @@ def plot_scatter(df, category_col, period_col, duration_col, output_file, catego
         category_df = df[df[category_col] == category]
         for period in periods:
             period_df = category_df[category_df[period_col] == period]
-            ax.scatter(np.full(len(period_df), x_points[period]), period_df[duration_col], alpha=0.5, label=period)
+            ax.scatter(np.full(len(period_df), x_points[period]), period_df[view_counts_col], alpha=0.5, label=period)
         ax.set_title(category)
-        ax.set_ylabel('Duration' if i % n_cols == 0 else '')
+        ax.set_ylabel('view_counts' if i % n_cols == 0 else '')
         ax.set_xticks(list(x_points.values()))
         ax.set_xticklabels(periods)
         ax.set_xlabel('')
@@ -133,7 +133,7 @@ def plot_scatter(df, category_col, period_col, duration_col, output_file, catego
         if cat_result:
             text_color = 'crimson' if cat_result[2] == "Significant" else 'black'
             ax.text(0.5, 0.90, f'p={cat_result[1]:.4f}, {cat_result[2]}', ha='center', transform=ax.transAxes, color=text_color, alpha=0.7, fontsize=18)
-    plt.suptitle('Scatter Plot of Duration for Each Category by Period')
+    plt.suptitle('Scatter Plot of view_counts for Each Category by Period')
     for ax in axes:
         if ax.get_legend() is not None:
             ax.get_legend().remove()
@@ -143,7 +143,7 @@ def plot_scatter(df, category_col, period_col, duration_col, output_file, catego
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
     plt.savefig(output_file)
 
-def plot_violin(df, category_col, period_col, duration_col, output_file, category_results):
+def plot_violin(df, category_col, period_col, view_counts_col, output_file, category_results):
     categories = df[category_col].unique()
     n_categories = len(categories)
     n_cols = min(n_categories, 3)
@@ -156,17 +156,17 @@ def plot_violin(df, category_col, period_col, duration_col, output_file, categor
     for i, category in enumerate(categories):
         ax = axes[i]
         category_df = df[df[category_col] == category]
-        sns.violinplot(x=category_col, y=duration_col, hue=period_col, data=category_df, ax=ax, palette="hls", split=True)
+        sns.violinplot(x=category_col, y=view_counts_col, hue=period_col, data=category_df, ax=ax, palette="hls", split=True)
         for patch in ax.collections:
             patch.set_alpha(0.8)
         ax.set_title(category)
         ax.set_xlabel('')
-        ax.set_ylabel('Duration' if i % n_cols == 0 else '')
+        ax.set_ylabel('view_counts' if i % n_cols == 0 else '')
         cat_result = next((item for item in category_results if item[0] == category), None)
         if cat_result:
             text_color = 'crimson' if cat_result[2] == "Significant" else 'black'
             ax.text(0.5, 0.90, f'p={cat_result[1]:.4f}, {cat_result[2]}', ha='center', transform=ax.transAxes, color=text_color, alpha=0.7, fontsize=18)
-    plt.suptitle('Violin Plot of Duration by Category and Experiment Period')
+    plt.suptitle('Violin Plot of view_counts by Category and Experiment Period')
     handles, labels = axes[0].get_legend_handles_labels()
     for ax in axes:
         if ax.get_legend() is not None:
@@ -176,7 +176,7 @@ def plot_violin(df, category_col, period_col, duration_col, output_file, categor
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
     plt.savefig(output_file)
 
-def plot_bar(df, category_col, period_col, duration_col, output_file, category_results):
+def plot_bar(df, category_col, period_col, view_counts_col, output_file, category_results):
     categories = df[category_col].unique()
     n_categories = len(categories)
     n_cols = min(n_categories, 3)
@@ -189,15 +189,15 @@ def plot_bar(df, category_col, period_col, duration_col, output_file, category_r
     for i, category in enumerate(categories):
         ax = axes[i]
         category_df = df[df[category_col] == category]
-        sns.barplot(x=category_col, y=duration_col, hue=period_col, data=category_df, ax=ax, palette="hls", alpha=0.8, errorbar=None)
+        sns.barplot(x=category_col, y=view_counts_col, hue=period_col, data=category_df, ax=ax, palette="hls", alpha=0.8, errorbar=None)
         ax.set_title(category)
         ax.set_xlabel('')
-        ax.set_ylabel('Total Duration' if i % n_cols == 0 else '')
+        ax.set_ylabel('Total view_counts' if i % n_cols == 0 else '')
         cat_result = next((item for item in category_results if item[0] == category), None)
         if cat_result:
             text_color = 'crimson' if cat_result[2] == "Significant" else 'black'
             ax.text(0.5, 0.90, f'p={cat_result[1]:.4f}, {cat_result[2]}', ha='center', transform=ax.transAxes, color=text_color, alpha=0.7, fontsize=18)
-    plt.suptitle('Total Duration of Each Category for Each Period')
+    plt.suptitle('Total view_counts of Each Category for Each Period')
     handles, labels = axes[0].get_legend_handles_labels()
     for ax in axes:
         if ax.get_legend() is not None:
@@ -207,7 +207,7 @@ def plot_bar(df, category_col, period_col, duration_col, output_file, category_r
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
     plt.savefig(output_file)
 
-def plot_histograms(df, category_col, period_col, duration_col, output_file):
+def plot_histograms(df, category_col, period_col, view_counts_col, output_file):
     categories = df[category_col].unique()
     periods = df[period_col].unique()
     n_rows = -(-len(categories) // 2)
@@ -224,16 +224,16 @@ def plot_histograms(df, category_col, period_col, duration_col, output_file):
             subset = df[(df[category_col] == category) & (df[period_col] == period)]
             n_data_points = len(subset)
             bin_nums = 1 + int(np.log2(n_data_points)) if n_data_points > 0 else 1
-            sns.histplot(subset[duration_col], kde=True, ax=ax, bins=bin_nums, color='skyblue', alpha=0.8)
+            sns.histplot(subset[view_counts_col], kde=True, ax=ax, bins=bin_nums, color='skyblue', alpha=0.8)
             ax.set_title(f'{category} - {period}')
-            ax.set_xlabel(duration_col if row == n_rows - 1 else '')
+            ax.set_xlabel(view_counts_col if row == n_rows - 1 else '')
             ax.set_ylabel('Frequency' if col == 0 else '')
     plt.tight_layout()
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
     plt.savefig(output_file)
 
 
-input_folder = '../data/csv/complete/'
+input_folder = '../data/csv/add_counts/'
 output_folder_base = '../data/img/'
 os.makedirs(output_folder_base, exist_ok=True)
 
@@ -254,14 +254,14 @@ for file in os.listdir(input_folder):
         print(f"================================================")
 
         print("\n統計量（'category', 'period'）：")
-        print_statistics(combined_df, 'category', 'period', 'duration')
+        print_statistics(combined_df, 'category', 'period', 'view_counts')
         
         category_results = []
         for category in df['category'].unique():
             ep1 = df_EP1[df_EP1['category'] == category]
             ep2 = df_EP2[df_EP2['category'] == category]
             print(f"\ncategory: {category}")
-            result = compare_groups(ep1, ep2, 'duration', paired=True) #paired=True
+            result = compare_groups(ep1, ep2, 'view_counts', paired=True) #paired=True
             if result is not None:
                 p_value, significance = result
                 category_results.append((category, p_value, significance))
@@ -269,9 +269,9 @@ for file in os.listdir(input_folder):
                 print("Unable to perform statistical test because data is less than 3.")
 
         os.makedirs(output_folder, exist_ok=True)
-        plot_bar(combined_df, 'category', 'period', 'duration', f'{output_folder}/barplot.png', category_results)
-        plot_boxplot(combined_df, 'category', 'period', 'duration', f'{output_folder}/boxplot.png', category_results)
-        plot_scatter(combined_df, 'category', 'period', 'duration', f'{output_folder}/scatterplot.png', category_results)
-        plot_violin(combined_df, 'category', 'period', 'duration', f'{output_folder}/violinplot.png', category_results)
-        plot_histograms(combined_df, 'category', 'period', 'duration', f'{output_folder}/histogram.png')
+        plot_bar(combined_df, 'category', 'period', 'view_counts', f'{output_folder}/barplot.png', category_results)
+        plot_boxplot(combined_df, 'category', 'period', 'view_counts', f'{output_folder}/boxplot.png', category_results)
+        plot_scatter(combined_df, 'category', 'period', 'view_counts', f'{output_folder}/scatterplot.png', category_results)
+        plot_violin(combined_df, 'category', 'period', 'view_counts', f'{output_folder}/violinplot.png', category_results)
+        plot_histograms(combined_df, 'category', 'period', 'view_counts', f'{output_folder}/histogram.png')
         plt.close('all')

@@ -8,7 +8,7 @@ import japanize_matplotlib
 import os
 
 def is_normal(data, test_type="shapiro"):
-    if len(data) < 3:
+    if len(data) < 3 or np.std(data) == 0:
         return False
     if test_type == "shapiro":
         stat, p = stats.shapiro(data)
@@ -22,6 +22,8 @@ def is_normal(data, test_type="shapiro"):
 
 def check_equal_variance(df1, df2, column, normal=True):
     if df1[column].empty or df2[column].empty or len(df1[column]) < 3 or len(df2[column]) < 3:
+        return None
+    if np.var(df1[column]) == 0 or np.var(df2[column]) == 0:
         return None
     if normal:
         stat, p = stats.levene(df1[column], df2[column])
