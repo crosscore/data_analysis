@@ -14,12 +14,11 @@ for file in os.listdir(input_folder):
         df = pd.read_csv(input_file_path, dtype={'user': str})
         df['user'] = df['user'].str.zfill(4)
 
-        df = df[['user', 'date', 'duration']]
+        df = df[['user', 'date', 'category']]
         df.dropna(inplace=True)
 
-        df['category'] = filename
-
+        #df['category'] = filename
+        # print(df['category'].value_counts(dropna=False))
         print(df)
-        print(df['category'].value_counts(dropna=False))
 
         df.to_csv(output_file_path, index=False)

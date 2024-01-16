@@ -1,8 +1,8 @@
 import pandas as pd
 import os
 
-input_file_folder = "../../data/csv/outlier_removed/"
-output_folder = "../../data/csv/0sec_category_unprocessed/"
+input_file_folder = "../../data/csv/add_counts/"
+output_folder = "../../data/csv/complete/"
 os.makedirs(output_folder, exist_ok=True)
 
 for file in os.listdir(input_file_folder):
@@ -21,11 +21,9 @@ for file in os.listdir(input_file_folder):
                 'user': [user] * len(missing_categories),
                 'period': [period] * len(missing_categories),
                 'category': list(missing_categories),
-                'duration': [0] * len(missing_categories),
-                'days': [0] * len(missing_categories)
+                'counts': [0] * len(missing_categories),
             })
-            missing_rows['days'] = missing_rows['days'].astype(int)
-            missing_rows['duration'] = missing_rows['duration'].astype(int)
+            missing_rows['counts'] = missing_rows['counts'].astype(int)
             final_df = pd.concat([final_df, group, missing_rows], ignore_index=True)
 
         final_df = final_df.sort_values(['period', 'user', 'category']).reset_index(drop=True)

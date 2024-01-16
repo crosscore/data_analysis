@@ -49,11 +49,17 @@ def create_combined_df(input_csv_path, output_dir):
         df['days'] = df.apply(calculate_exp2_days, axis=1)
         return df
 
+    # def parse_datetime(dt_str):
+    #     try:
+    #         return pd.to_datetime(dt_str, format='%Y/%m/%d %H:%M:%S')
+    #     except ValueError:
+    #         return pd.to_datetime(dt_str, format='%Y/%m/%d %H:%M')
+
     def parse_datetime(dt_str):
         try:
-            return pd.to_datetime(dt_str, format='%Y/%m/%d %H:%M:%S')
+            return pd.to_datetime(dt_str)
         except ValueError:
-            return pd.to_datetime(dt_str, format='%Y/%m/%d %H:%M')
+            return pd.to_datetime(dt_str)
 
     df = pd.read_csv(input_csv_path, dtype={'user': str})
     df['date'] = df['date'].apply(parse_datetime)

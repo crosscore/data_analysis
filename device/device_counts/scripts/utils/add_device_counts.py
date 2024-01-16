@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 
-input_folder = "../../data/csv/original/"
+input_folder = "../../data/csv/add_EP/"
 output_folder = "../../data/csv/add_counts/"
 os.makedirs(output_folder, exist_ok=True)
 
@@ -14,7 +14,7 @@ for file in os.listdir(input_folder):
         df = pd.read_csv(input_file_path, dtype={'user': str})
         print(df)
 
-        df = df.groupby(['user', 'period', 'category']).size().reset_index(name='view_counts')
+        df = df.groupby(['user', 'period', 'category']).size().reset_index(name='counts')
         df = df.sort_values(['period', 'user', 'category'])
 
         print(df)
