@@ -31,19 +31,19 @@ def remove_outliers(df, column):
         print(f"Normal distribution. Applying 3σ Outlier Removal.")
         mean = np.mean(data)
         std = np.std(data)
-        outliers = np.abs(data - mean) > 3 * std
+        outliers = np.abs(data - mean) > 2 * std
     else:
         print(f"Not normal. Applying 3.0 IQR Outlier Removal.")
         q1 = np.percentile(data, 25)
         q3 = np.percentile(data, 75)
         iqr = q3 - q1
-        lower_bound = q1 - 3.0 * iqr
-        upper_bound = q3 + 3.0 * iqr
+        lower_bound = q1 - 2.0 * iqr
+        upper_bound = q3 + 2.0 * iqr
         outliers = (data < lower_bound) | (data > upper_bound)
     return df[~outliers]
 
 input_folder = '../data/csv/add_weekdays/'
-output_folder = '../data/csv/outlier_removed/'
+output_folder = '../data/csv/outlier_removed2/'
 os.makedirs(output_folder, exist_ok=True)
 
 for file in os.listdir(input_folder):

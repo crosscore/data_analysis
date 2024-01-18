@@ -2,8 +2,8 @@ import pandas as pd
 import os
 from itertools import product
 
-input_file_folder = "../../data/csv/outlier_removed/"
-output_folder = "../../data/csv/add_0sec_weekdays/"
+input_file_folder = "../../data/csv/add_weekdays/"
+output_folder = "../../data/csv/add_0sec_weekdays0/"
 os.makedirs(output_folder, exist_ok=True)
 
 weekdays_list = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
@@ -23,10 +23,10 @@ for file in os.listdir(input_file_folder):
 
         # 各ユーザーの共通のカテゴリを取得
         common_categories = df.groupby(['user', 'period'])['category'].agg(lambda x: pd.Series.mode(x)[0] if not x.empty else None).reset_index()
-        print(common_categories)
 
         # all_combinationsとdfの結合
         df_complete = pd.merge(all_combinations, df, on=['user', 'period', 'weekdays'], how='left')
+        print(df_complete)
 
         # カテゴリを追加
         df_complete = pd.merge(df_complete, common_categories, on=['user', 'period'], how='left', suffixes=('', '_y'))
