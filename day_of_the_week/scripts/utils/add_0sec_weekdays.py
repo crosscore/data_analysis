@@ -2,8 +2,8 @@ import pandas as pd
 import os
 from itertools import product
 
-input_file_folder = "../../data/csv/outlier_removed3.0/"
-output_folder = "../../data/csv/add_0sec_weekdays3.0/"
+input_file_folder = "../../data/csv/outlier_removed0/"
+output_folder = "../../data/csv/add_0sec_weekdays0/"
 os.makedirs(output_folder, exist_ok=True)
 
 weekdays_list = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
@@ -34,8 +34,9 @@ for file in os.listdir(input_file_folder):
         df_complete.drop('category_y', axis=1, inplace=True)
 
         df_complete['duration'] = df_complete['duration'].fillna(0).astype(int)
+        df_complete['days'] = df_complete['days'].fillna(0).astype(int)
 
-        df_complete.sort_values(by=['period', 'user'], inplace=True)
+        df_complete.sort_values(by=['period', 'user', 'date'], inplace=True)
 
         df_complete.to_csv(output_file_path, index=False)
 

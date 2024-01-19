@@ -233,8 +233,8 @@ def plot_histograms(df, weekdays_col, period_col, duration_col, output_file):
     plt.savefig(output_file)
 
 
-input_folder = '../data/csv/complete3.0/'
-output_folder_base = '../data/img/3.0/'
+input_folder = '../data/csv/complete0/'
+output_folder_base = '../data/img/0/'
 os.makedirs(output_folder_base, exist_ok=True)
 
 for file in os.listdir(input_folder):
