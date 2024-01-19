@@ -30,4 +30,6 @@ for file in os.listdir(input_file_folder):
         merged_df = all_combinations.merge(counts, on=['user', 'period', 'category'], how='left').fillna(0)
         merged_df['counts'] = merged_df['counts'].astype(int)
 
+        merged_df = merged_df.sort_values(by=['period', 'user'])
+
         merged_df.to_csv(output_file_path, index=False)

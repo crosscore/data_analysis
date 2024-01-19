@@ -22,5 +22,8 @@ for file in os.listdir(input_file_folder):
 
         print(df)
         print(df['unique'].value_counts(dropna=False))
+        
+        # Convert 'date' column to datetime and format it
+        df['date'] = pd.to_datetime(df['date']).dt.strftime('%Y/%m/%d %H:%M:%S')
 
         df.to_csv(output_file_path, index=False)

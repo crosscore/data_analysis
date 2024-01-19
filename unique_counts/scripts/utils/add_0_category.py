@@ -2,7 +2,7 @@ import pandas as pd
 import os
 
 input_file_folder = "../../data/csv/add_days/"
-output_folder = "../../data/csv/0_category_unprocessed/"
+output_folder = "../../data/csv/0_category/"
 os.makedirs(output_folder, exist_ok=True)
 
 for file in os.listdir(input_file_folder):
@@ -24,9 +24,9 @@ for file in os.listdir(input_file_folder):
                 'duration': [0] * len(missing_categories),
                 'days': [0] * len(missing_categories)
             })
-            missing_rows['days'] = missing_rows['days'].astype(int)
-            missing_rows['duration'] = missing_rows['duration'].astype(int)
             final_df = pd.concat([final_df, group, missing_rows], ignore_index=True)
+            final_df['duration'] = final_df['duration'].astype(int)
+            final_df['days'] = final_df['days'].astype(int)
 
         final_df = final_df.sort_values(['period', 'user', 'category']).reset_index(drop=True)
         final_df.to_csv(output_file_path, index=False)
