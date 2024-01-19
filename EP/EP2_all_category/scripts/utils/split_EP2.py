@@ -1,8 +1,8 @@
 import pandas as pd
 import os
 
-input_folder = "../../data/csv/original/"
-output_folder = "../../data/csv/split_EP2/"
+input_folder = "../../data/csv/0sec_category3.0/"
+output_folder = "../../data/csv/split_EP2_3.0/"
 os.makedirs(output_folder, exist_ok=True)
 
 for file in os.listdir(input_folder):

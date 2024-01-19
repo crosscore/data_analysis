@@ -2,8 +2,8 @@ import pandas as pd
 import os
 from itertools import product
 
-input_file_folder = "../../data/csv/add_weekdays/"
-output_folder = "../../data/csv/add_0sec_weekdays0/"
+input_file_folder = "../../data/csv/outlier_removed3.0/"
+output_folder = "../../data/csv/add_0sec_weekdays3.0/"
 os.makedirs(output_folder, exist_ok=True)
 
 weekdays_list = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']

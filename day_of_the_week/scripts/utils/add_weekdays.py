@@ -9,6 +9,7 @@ def convert_to_datetime(date_str):
     """
     for fmt in ('%Y-%m-%d %H:%M:%S', '%Y/%m/%d %H:%M:%S'):
         try:
+            print(datetime.strptime(date_str, fmt))
             return datetime.strptime(date_str, fmt)
         except ValueError:
             pass

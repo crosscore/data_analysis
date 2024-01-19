@@ -1,8 +1,8 @@
 import pandas as pd
 import os
 
-input_folder = "../../data/csv/add_0sec_weekdays0/"
-output_folder = "../../data/csv/complete0/"
+input_folder = "../../data/csv/add_0sec_weekdays3.0/"
+output_folder = "../../data/csv/complete3.0/"
 os.makedirs(output_folder, exist_ok=True)
 
 weekdays_list = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
