@@ -3,7 +3,7 @@ import numpy as np
 import scipy.stats as stats
 import seaborn as sns
 
-n_iterations = 1000
+n_iterations = 100
 p_values = []
 
 for _ in range(n_iterations):
